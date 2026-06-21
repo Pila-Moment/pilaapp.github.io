@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PILA — Your Pilates Moment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:#0a0a0a}
+:root{
+  --pink:#f472b6;--pink2:#ec4899;--pink3:#db2777;
+  --pinkl:#fdf2f8;--pinkll:#fce7f3;
+  --void:#0a0a0a;--void2:#1a1a1a;
+  --chalk:#fafafa;--chalk2:#f4f4f5;
+  --dust:#a1a1aa;--dust2:#71717a;
+  --sh:0 2px 20px rgba(0,0,0,0.08);
+  --sh-lg:0 16px 48px rgba(0,0,0,0.16);
+}
+html{-webkit-tap-highlight-color:transparent;background:#0a0a0a}
+body{font-family:'DM Sans',sans-serif;color:var(--void);-webkit-font-smoothing:antialiased;max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;background:#0a0a0a}
+button{cursor:pointer;font-family:'DM Sans',sans-serif;border:none;outline:none}
+.screen{display:none}.screen.on{display:block}
+
+/* ── WELCOME ── */
+.welcome{min-height:100vh;background:var(--void);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.w-bg-circles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.w-circle{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.15}
+.w-c1{width:300px;height:300px;background:var(--pink);top:-80px;right:-60px}
+.w-c2{width:200px;height:200px;background:#c084fc;bottom:100px;left:-60px}
+.w-c3{width:150px;height:150px;background:var(--pink2);bottom:200px;right:20px}
+.w-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:max(60px,env(safe-area-inset-top)) 28px 48px}
+.w-logo{margin-bottom:auto}
+.pila-logo{font-family:'Pacifico',cursive;font-size:52px;background:linear-gradient(135deg,#f9a8d4,#f472b6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;letter-spacing:0px;padding-left:4px}
+.pila-tagline{font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:6px;font-weight:500}
+.w-hero{margin:auto 0 48px}
+.w-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(244,114,182,0.15);border:0.5px solid rgba(244,114,182,0.3);border-radius:100px;padding:6px 14px;margin-bottom:20px}
+.w-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--pink);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.w-pill-txt{font-size:11px;color:rgba(244,114,182,0.9);font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
+.w-h{font-size:48px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:16px;letter-spacing:-1.5px}
+.w-h em{font-style:italic;font-family:'Playfair Display',serif;font-weight:400;color:var(--pink)}
+.w-sub{font-size:16px;color:rgba(255,255,255,0.4);line-height:1.7;font-weight:300;max-width:300px}
+.w-cta{background:linear-gradient(135deg,var(--pink2),var(--pink3));color:#fff;width:100%;padding:18px;border-radius:16px;font-size:16px;font-weight:700;letter-spacing:0.01em;transition:all .2s;box-shadow:0 8px 32px rgba(236,72,153,0.35)}
+.w-cta:active{transform:scale(0.98)}
+.w-foot{text-align:center;margin-top:14px;font-size:12px;color:rgba(255,255,255,0.2)}
+
+/* ── STUDIO SELECT ── */
+.studio-screen{min-height:100vh;background:var(--chalk);display:flex;flex-direction:column;background:#0a0a0a}
+.ss-hdr{background:var(--void);padding:max(56px,env(safe-area-inset-top)) 24px 24px;position:relative;overflow:hidden}
+.ss-hdr-glow{position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(244,114,182,0.2) 0%,transparent 70%);pointer-events:none}
+.ss-logo{font-family:'Pacifico',cursive;font-size:28px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;padding-left:3px;line-height:1.3}
+.ss-ti{font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;letter-spacing:-0.5px}
+.ss-sub{font-size:14px;color:rgba(255,255,255,0.4);font-weight:300}
+.ss-body{flex:1;padding:20px;background:var(--chalk);border-radius:24px 24px 0 0;margin-top:-1px}
+.ss-search{display:flex;align-items:center;gap:10px;background:#fff;border:.5px solid rgba(0,0,0,0.08);border-radius:14px;padding:14px 16px;margin-bottom:20px;box-shadow:var(--sh)}
+.ss-search-ic{font-size:16px;color:var(--dust)}
+.ss-search input{flex:1;border:none;outline:none;font-size:15px;color:var(--void);font-family:'DM Sans',sans-serif;background:transparent}
+.ss-search input::placeholder{color:var(--dust)}
+.ss-section-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--dust);margin-bottom:10px}
+.studio-card{background:#fff;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;box-shadow:var(--sh);border:.5px solid rgba(0,0,0,0.04);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.studio-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(244,114,182,0.04),transparent);opacity:0;transition:opacity .2s}
+.studio-card:active::before{opacity:1}
+.studio-card:active{transform:scale(0.98)}
+.studio-av{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative}
+.studio-av-pink{background:linear-gradient(135deg,#fce7f3,#fbcfe8)}
+.studio-av-sage{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+.studio-av-sky{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.studio-av-lilac{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+.studio-av-coral{background:linear-gradient(135deg,#ffe4e6,#fecdd3)}
+.studio-av-sand{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.studio-info{flex:1}
+.studio-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.studio-addr{font-size:12px;color:var(--dust);margin-bottom:4px}
+.studio-badge{display:inline-block;background:var(--pinkll);color:var(--pink3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;letter-spacing:0.04em}
+.studio-arrow{font-size:16px;color:var(--dust)}
+
+/* CLASS SELECT */
+.class-screen{min-height:100vh;background:#0a0a0a}
+.cs-hdr{background:var(--void);padding:max(56px,env(safe-area-inset-top)) 24px 24px}
+.back-btn{background:rgba(255,255,255,0.1);color:#fff;border-radius:100px;padding:8px 16px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;transition:background .2s}
+.back-btn:active{background:rgba(255,255,255,0.15)}
+.cs-studio-chip{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.cs-studio-dot{width:8px;height:8px;border-radius:50%;background:var(--pink);flex-shrink:0}
+.cs-studio-name{font-size:13px;color:rgba(255,255,255,0.5);font-weight:500}
+.cs-ti{font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px}
+.cs-body{padding:20px;background:var(--chalk);border-radius:24px 24px 0 0;margin-top:-1px}
+.class-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.class-opt{background:#fff;border-radius:14px;padding:16px 14px;text-align:center;box-shadow:var(--sh);border:2px solid transparent;cursor:pointer;transition:all .2s}
+.class-opt:active{transform:scale(0.96)}
+.class-opt.sel{border-color:var(--pink);background:var(--pinkll)}
+.class-opt-em{font-size:28px;margin-bottom:6px}
+.class-opt-name{font-size:13px;font-weight:600;color:var(--void)}
+.class-opt-sub{font-size:11px;color:var(--dust);margin-top:2px}
+.instructor-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:24px}
+.instructor-row::-webkit-scrollbar{display:none}
+.inst-chip{flex-shrink:0;background:#fff;border:1.5px solid rgba(0,0,0,0.06);border-radius:100px;padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+.inst-chip.sel{background:var(--void);color:#fff;border-color:var(--void)}
+.inst-chip:active{transform:scale(0.96)}
+.section-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--dust);margin-bottom:12px}
+.cta-btn{width:100%;background:linear-gradient(135deg,var(--pink2),var(--pink3));color:#fff;padding:17px;border-radius:14px;font-size:16px;font-weight:700;box-shadow:0 8px 24px rgba(236,72,153,0.3);transition:all .2s;letter-spacing:0.01em}
+.cta-btn:active{transform:scale(0.98)}
+.cta-btn:disabled{opacity:0.4;box-shadow:none}
+
+/* ── CAMERA ── */
+.cam-screen{position:fixed;inset:0;background:#000;z-index:100;display:none;flex-direction:column}
+.cam-screen.on{display:flex}
+.cam-hdr{padding:max(54px,env(safe-area-inset-top)) 20px 14px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);position:absolute;top:0;left:0;right:0;z-index:10}
+.cam-logo{font-family:'Pacifico',cursive;font-size:22px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding-left:2px;line-height:1.3}
+.cam-step-pill{background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border-radius:100px;padding:6px 14px;font-size:12px;color:#fff;font-weight:600;letter-spacing:0.05em}
+.cam-close{background:rgba(255,255,255,0.12);color:#fff;border-radius:50%;width:36px;height:36px;font-size:14px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.cam-main{flex:1;position:relative;overflow:hidden}
+#cam-back{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+#cam-front-preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none;z-index:5;border-radius:0}
+.cam-guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:4}
+.cam-guide-txt{background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border-radius:12px;padding:10px 18px;font-size:14px;color:#fff;font-weight:500;letter-spacing:0.02em}
+.cam-overlay-badge{position:absolute;bottom:160px;left:50%;transform:translateX(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:6px}
+.cam-studio-pill{background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,0.15);border-radius:100px;padding:7px 16px;font-size:12px;color:#fff;font-weight:600;letter-spacing:0.04em}
+.cam-class-pill{background:rgba(244,114,182,0.25);backdrop-filter:blur(12px);border:0.5px solid rgba(244,114,182,0.4);border-radius:100px;padding:5px 14px;font-size:11px;color:#f9a8d4;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+.cam-btm{padding:16px 24px max(32px,env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);position:absolute;bottom:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between}
+.cam-hint{font-size:12px;color:rgba(255,255,255,0.45);text-align:center;flex:1;line-height:1.5}
+.shutter{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.15);border:3px solid #fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s;backdrop-filter:blur(8px)}
+.shutter:active{transform:scale(0.9)}
+.shutter-in{width:58px;height:58px;border-radius:50%;background:#fff;transition:all .15s}
+.shutter.pink .shutter-in{background:linear-gradient(135deg,var(--pink),var(--pink3))}
+.cam-flip{background:rgba(255,255,255,0.12);color:#fff;border-radius:50%;width:46px;height:46px;font-size:20px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+
+/* ── RESULT ── */
+.result-screen{position:fixed;inset:0;background:#000;z-index:200;display:none;flex-direction:column}
+.result-screen.on{display:flex}
+.res-hdr{padding:max(54px,env(safe-area-inset-top)) 20px 14px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
+.res-logo{font-family:'Pacifico',cursive;font-size:22px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding-left:2px;line-height:1.3}
+.retake-btn{background:rgba(255,255,255,0.1);color:#fff;border-radius:100px;padding:8px 16px;font-size:13px;font-weight:600;border:.5px solid rgba(255,255,255,0.2);letter-spacing:0.02em}
+.retake-btn:active{transform:scale(0.96);transition:transform .15s}
+.res-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;padding:8px}
+#result-canvas{max-width:100%;max-height:100%;border-radius:12px;object-fit:contain}
+
+/* VIBE PRESETS */
+.vibe-row{background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);padding:12px 16px}
+.vibe-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px;font-weight:600}
+.vibe-opts{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.vibe-opts::-webkit-scrollbar{display:none}
+.vibe-opt{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.vibe-swatch{width:56px;height:56px;border-radius:12px;border:2.5px solid transparent;transition:all .2s;overflow:hidden;position:relative}
+.vibe-swatch.sel{border-color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,0.3)}
+.vibe-swatch canvas{width:100%;height:100%;display:block}
+.vibe-name{font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.vibe-opt.sel .vibe-name{color:#fff}
+
+.res-acts{padding:12px 20px max(24px,env(safe-area-inset-bottom));background:rgba(0,0,0,0.9);display:flex;flex-direction:column;gap:8px}
+.res-insta{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border-radius:14px;padding:15px;font-size:15px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:0.01em}
+.res-insta:active{transform:scale(0.98);transition:transform .15s}
+.res-save{background:rgba(255,255,255,0.08);color:#fff;border-radius:14px;padding:13px;font-size:14px;text-align:center;border:.5px solid rgba(255,255,255,0.1);font-weight:500}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--void);color:#fff;font-size:13px;font-weight:500;padding:12px 22px;border-radius:100px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;max-width:88vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.25)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen on" id="s-welcome">
+  <div class="welcome">
+    <div class="w-bg-circles">
+      <div class="w-circle w-c1"></div>
+      <div class="w-circle w-c2"></div>
+      <div class="w-circle w-c3"></div>
+    </div>
+    <div class="w-content">
+      <div class="w-logo">
+        <div class="pila-logo">pila.</div>
+        <div class="pila-tagline">Your Pilates Moment</div>
+      </div>
+      <div class="w-hero">
+        <div class="w-pill"><div class="w-pill-dot"></div><span class="w-pill-txt">BeReal meets Strava</span></div>
+        <div class="w-h">Every class<br>is a <em>moment.</em></div>
+        <div class="w-sub">Check into your studio. Capture the vibe. Share your stats. Your Pilates story, told beautifully.</div>
+      </div>
+      <button class="w-cta" onclick="goTo('s-studio')">Start your moment →</button>
+      <div class="w-foot">Free for members · Scans the QR at your studio</div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDIO SELECT -->
+<div class="screen" id="s-studio">
+  <div class="studio-screen">
+    <div class="ss-hdr">
+      <div class="ss-hdr-glow"></div>
+      <div class="ss-logo">pila.</div>
+      <div class="ss-ti">Choose your studio</div>
+      <div class="ss-sub">Where are you reforming today?</div>
+    </div>
+    <div class="ss-body">
+      <div class="ss-search">
+        <div class="ss-search-ic">🔍</div>
+        <input type="text" placeholder="Search studios in Toronto…" oninput="filterStudios(this.value)">
+      </div>
+      <div class="ss-section-label">Toronto studios</div>
+      <div id="studio-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLASS SELECT -->
+<div class="screen" id="s-class">
+  <div class="class-screen">
+    <div class="cs-hdr">
+      <button class="back-btn" onclick="goTo('s-studio')">← Back</button>
+      <div class="cs-studio-chip">
+        <div class="cs-studio-dot"></div>
+        <div class="cs-studio-name" id="cs-studio-name">Studio</div>
+      </div>
+      <div class="cs-ti">What did you do?</div>
+    </div>
+    <div class="cs-body">
+      <div class="section-label">Class type</div>
+      <div class="class-grid" id="class-grid"></div>
+      <div class="section-label">Instructor <span style="color:var(--dust);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+      <div class="instructor-row" id="inst-row"></div>
+      <button class="cta-btn" id="cam-go-btn" onclick="openCamera()" disabled>📸 Capture your moment</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAMERA -->
+<div class="cam-screen" id="s-cam">
+  <div class="cam-hdr">
+    <div class="cam-logo">pila.</div>
+    <div class="cam-step-pill" id="cam-step-pill">Back camera</div>
+    <button class="cam-close" onclick="closeCamera()">✕</button>
+  </div>
+  <div class="cam-main">
+    <video id="cam-back" autoplay playsinline muted></video>
+    <video id="cam-front-preview" autoplay playsinline muted></video>
+    <div id="back-thumb-wrap" style="display:none;position:absolute;bottom:20px;right:20px;width:80px;height:107px;border-radius:12px;overflow:hidden;border:2px solid #fff;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,0.5)">
+      <canvas id="back-thumb" width="80" height="107" style="width:100%;height:100%;display:block"></canvas>
+    </div>
+    <div class="cam-guide"><div class="cam-guide-txt" id="cam-guide-txt">Point at your studio or reformer</div></div>
+    <div class="cam-overlay-badge">
+      <div class="cam-studio-pill" id="cam-studio-pill">📍 Studio</div>
+      <div class="cam-class-pill" id="cam-class-pill">🧘 Reformer</div>
+    </div>
+  </div>
+  <div class="cam-btm">
+    <div class="cam-flip-spacer" style="width:46px"></div>
+    <button class="shutter" id="shutter-btn" onclick="handleShutter()">
+      <div class="shutter-in"></div>
+    </button>
+    <button class="cam-flip" onclick="flipCamera()" id="flip-btn">🔄</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="result-screen" id="s-result">
+  <div class="res-hdr">
+    <div class="res-logo">pila.</div>
+    <button class="retake-btn" onclick="retake()">↩ Retake</button>
+  </div>
+  <div class="res-canvas-wrap">
+    <canvas id="result-canvas"></canvas>
+  </div>
+  <div class="vibe-row">
+    <div class="vibe-label">Choose your vibe</div>
+    <div class="vibe-opts" id="vibe-opts"></div>
+  </div>
+  <div class="res-acts">
+    <button class="res-insta" onclick="shareToInsta()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Share to Instagram Story
+    </button>
+    <button class="res-save" onclick="savePhoto()">⬇️ Save to camera roll</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const STUDIOS = [
+  { id:'motiv', name:'MOTIV Pilates', addr:'842 Danforth Ave', neighborhood:'Danforth', em:'🌿', color:'studio-av-sage', ig:'@motivpilates', instructors:['Lisa W.','Hayley C.','Chloe W.','Simona E.'] },
+  { id:'muse', name:'Muse Movement', addr:'890 Dundas St W', neighborhood:'Trinity Bellwoods', em:'🌸', color:'studio-av-pink', ig:'@musemovement.ca', instructors:['Instructor'] },
+  { id:'assembly', name:'Assembly Movement', addr:'954 College St', neighborhood:'Little Italy', em:'💪', color:'studio-av-lilac', ig:'@assemblymovement', instructors:['Instructor'] },
+  { id:'jaybird', name:'Jaybird Pilates', addr:'751 Queen St W', neighborhood:'Queen West', em:'🐦', color:'studio-av-sky', ig:'@jaybird.pilates', instructors:['Instructor'] },
+  { id:'niceday', name:'Nice Day Pilates', addr:'343 King St E', neighborhood:'Corktown', em:'☀️', color:'studio-av-sand', ig:'@nicedaypilates', instructors:['Instructor'] },
+  { id:'sliving', name:'Sliving Studios', addr:'150 Eglinton Ave E', neighborhood:'Midtown', em:'✨', color:'studio-av-pink', ig:'@slivingstudios', instructors:['Instructor'] },
+  { id:'fortides', name:'Fortides Pilates', addr:'1 Eglinton Ave E', neighborhood:'Davisville', em:'🧘', color:'studio-av-sage', ig:'@fortidespilates', instructors:['Instructor'] },
+  { id:'solis', name:'Solis Movement', addr:'1350 Danforth Ave', neighborhood:'East Toronto', em:'🔥', color:'studio-av-coral', ig:'@solismovement.ca', instructors:['Instructor'] },
+  { id:'bode', name:'Bode Movement', addr:'368 Dufferin St', neighborhood:'Dufferin', em:'💙', color:'studio-av-sky', ig:'@bodemovement', instructors:['Instructor'] },
+  { id:'strongpilates', name:'Strong Pilates', addr:'580 College St', neighborhood:'Little Italy', em:'⚡', color:'studio-av-lilac', ig:'@strongpilates.ca', instructors:['Instructor'] },
+  { id:'clubpilatesjunction', name:'Club Pilates Junction', addr:'2720 Dundas St W', neighborhood:'The Junction', em:'🏠', color:'studio-av-sage', ig:'@clubpilates', instructors:['Instructor'] },
+  { id:'clubpilatescollege', name:'Club Pilates College Park', addr:'777 Bay St', neighborhood:'College Park', em:'🏙️', color:'studio-av-sky', ig:'@clubpilates', instructors:['Instructor'] },
+  { id:'clubpilatesleslieville', name:'Club Pilates Leslieville', addr:'1000 Queen St E', neighborhood:'Leslieville', em:'🌺', color:'studio-av-pink', ig:'@clubpilates', instructors:['Instructor'] },
+  { id:'coco', name:'Coco Reformer Pilates', addr:'Toronto', neighborhood:'Downtown', em:'🥥', color:'studio-av-sand', ig:'@coco.reformer.pilates', instructors:['Instructor'] },
+  { id:'sheboss', name:'SheBoss Studio', addr:'Toronto', neighborhood:'Downtown', em:'👑', color:'studio-av-lilac', ig:'@shebossstudio', instructors:['Instructor'] },
+  { id:'culture', name:'Culture Studios', addr:'Toronto', neighborhood:'Downtown', em:'🎨', color:'studio-av-sky', ig:'@culturestudios.ca', instructors:['Instructor'] },
+  { id:'elemon', name:'Elemon Pilates', addr:'Toronto', neighborhood:'Midtown', em:'🍋', color:'studio-av-sand', ig:'@elemonpilates', instructors:['Instructor'] },
+  { id:'bluecanoe', name:'Blue Canoe Zen Gym', addr:'Toronto', neighborhood:'East End', em:'🛶', color:'studio-av-sky', ig:'@bluecanoe.zen', instructors:['Instructor'] },
+  { id:'iamyoga', name:'IAM Yoga Pilates', addr:'2323 Yonge St', neighborhood:'Yonge & Eglinton', em:'🧘', color:'studio-av-sage', ig:'@iamyogapilates', instructors:['Instructor'] },
+  { id:'galeria', name:'Galeria Pilates', addr:'Toronto', neighborhood:'Midtown', em:'🖼️', color:'studio-av-pink', ig:'@galeriapilates', instructors:['Instructor'] },
+  { id:'bodyharmonics', name:'Body Harmonics', addr:'70 The Esplanade', neighborhood:'St Lawrence', em:'🎵', color:'studio-av-lilac', ig:'@bodyharmonics', instructors:['Instructor'] },
+  { id:'wickedbarre', name:'Wicked Barre', addr:'Thornhill', neighborhood:'Thornhill', em:'🩰', color:'studio-av-pink', ig:'@wickedbarre', instructors:['Instructor'] },
+  { id:'sukha', name:'Sukha Yoga & Pilates', addr:'Toronto', neighborhood:'East End', em:'🌀', color:'studio-av-sage', ig:'@sukhayoga.to', instructors:['Instructor'] },
+  { id:'clubwellness', name:'ClubWell Studio', addr:'Toronto', neighborhood:'Midtown', em:'💎', color:'studio-av-sky', ig:'@clubwellstudio', instructors:['Instructor'] },
+  { id:'musemovement2', name:'Reformer Republic', addr:'Toronto', neighborhood:'King West', em:'🏛️', color:'studio-av-lilac', ig:'@reformerrepublic', instructors:['Instructor'] },
+]
+
+const CLASSES = [
+  { id:'reformer', em:'🧘', name:'Reformer', sub:'Guided reformer' },
+  { id:'mat', em:'🤸', name:'Mat Pilates', sub:'Floor-based' },
+  { id:'barre', em:'🩰', name:'Barre', sub:'Ballet-inspired' },
+  { id:'lagree', em:'⚡', name:'Lagree', sub:'Megaformer' },
+  { id:'yoga', em:'🌿', name:'Yoga', sub:'Flow & restore' },
+  { id:'stretch', em:'✨', name:'Stretch', sub:'Recovery' },
+  { id:'cardio', em:'🏃', name:'Cardio Pilates', sub:'High energy' },
+  { id:'tower', em:'🗼', name:'Tower', sub:'Cadillac tower' },
+  { id:'chair', em:'🪑', name:'Wunda Chair', sub:'Chair-based' },
+  { id:'private', em:'⭐', name:'Private Session', sub:'One-on-one' },
+]
+
+const VIBES = [
+  { id:'clean', name:'Clean Girl', desc:'Minimal & soft' },
+  { id:'dark', name:'Dark Mode', desc:'Bold & moody' },
+  { id:'y2k', name:'Y2K', desc:'Warm & retro' },
+  { id:'athlete', name:'Athlete', desc:'Sharp & clean' },
+  { id:'city', name:'City', desc:'Toronto skyline' },
+  { id:'bloom', name:'Bloom', desc:'Dreamy & soft' },
+]
+
+// ── STATE ──
+let selStudio = null, selClass = null, selInstructor = null, selVibe = 'clean'
+let backStream = null, frontStream = null, backPhotoData = null, frontPhotoData = null
+let cameraStep = 'back' // 'back' or 'front'
+let mockStats = { classes: 25, streak: 8, points: 1250, milestone: '💪 25 classes' }
+
+// ── INIT ──
+renderStudios(STUDIOS)
+renderClasses()
+renderVibes()
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'))
+  document.getElementById(id).classList.add('on')
+  window.scrollTo(0, 0)
+}
+
+// ── STUDIOS ──
+function renderStudios(list) {
+  document.getElementById('studio-list').innerHTML = list.map(s => `
+    <div class="studio-card" onclick="selectStudio('${s.id}')">
+      <div class="studio-av ${s.color}">${s.em}</div>
+      <div class="studio-info">
+        <div class="studio-name">${s.name}</div>
+        <div class="studio-addr">${s.addr} · ${s.neighborhood}</div>
+        <div class="studio-badge">✦ PILA studio</div>
+      </div>
+      <div class="studio-arrow">›</div>
+    </div>
+  `).join('')
+}
+
+function filterStudios(q) {
+  const filtered = STUDIOS.filter(s =>
+    s.name.toLowerCase().includes(q.toLowerCase()) ||
+    s.neighborhood.toLowerCase().includes(q.toLowerCase())
+  )
+  renderStudios(filtered)
+}
+
+function selectStudio(id) {
+  selStudio = STUDIOS.find(s => s.id === id)
+  document.getElementById('cs-studio-name').textContent = selStudio.name
+  renderInstructors(selStudio.instructors)
+  selClass = null; selInstructor = null
+  document.querySelectorAll('.class-opt').forEach(o => o.classList.remove('sel'))
+  document.querySelectorAll('.inst-chip').forEach(o => o.classList.remove('sel'))
+  document.getElementById('cam-go-btn').disabled = true
+  goTo('s-class')
+}
+
+// ── CLASSES ──
+function renderClasses() {
+  document.getElementById('class-grid').innerHTML = CLASSES.map(c => `
+    <div class="class-opt" id="co-${c.id}" onclick="selectClass('${c.id}')">
+      <div class="class-opt-em">${c.em}</div>
+      <div class="class-opt-name">${c.name}</div>
+      <div class="class-opt-sub">${c.sub}</div>
+    </div>
+  `).join('')
+}
+
+function selectClass(id) {
+  selClass = CLASSES.find(c => c.id === id)
+  document.querySelectorAll('.class-opt').forEach(o => o.classList.remove('sel'))
+  document.getElementById('co-' + id).classList.add('sel')
+  document.getElementById('cam-go-btn').disabled = false
+}
+
+function renderInstructors(list) {
+  document.getElementById('inst-row').innerHTML = list.map(i => `
+    <div class="inst-chip" onclick="selectInstructor(this,'${i}')">${i}</div>
+  `).join('')
+}
+
+function selectInstructor(el, name) {
+  selInstructor = name
+  document.querySelectorAll('.inst-chip').forEach(o => o.classList.remove('sel'))
+  el.classList.add('sel')
+}
+
+// ── CAMERA ──
+async function openCamera() {
+  cameraStep = 'back'
+  backPhotoData = null; frontPhotoData = null
+  document.getElementById('s-cam').classList.add('on')
+  document.getElementById('cam-studio-pill').textContent = '📍 ' + selStudio.name
+  document.getElementById('cam-class-pill').textContent = selClass.em + ' ' + selClass.name
+  document.getElementById('cam-front-preview').style.display = 'none'
+  document.getElementById('cam-back').style.display = 'block'
+  document.getElementById('back-thumb-wrap').style.display = 'none'
+  updateCamUI()
+  await startBackCamera()
+}
+
+function updateCamUI() {
+  const pill = document.getElementById('cam-step-pill')
+  const guide = document.getElementById('cam-guide-txt')
+  const shutter = document.getElementById('shutter-btn')
+  const flip = document.getElementById('flip-btn')
+  if (cameraStep === 'back') {
+    pill.textContent = '① Back camera'
+    guide.textContent = 'Point at your studio or reformer'
+    shutter.classList.remove('pink')
+    flip.style.display = 'flex'
+  } else {
+    pill.textContent = '② Front camera — smile!'
+    guide.textContent = 'Now take your selfie'
+    shutter.classList.add('pink')
+    flip.style.display = 'none'
+  }
+}
+
+async function startBackCamera() {
+  if (backStream) backStream.getTracks().forEach(t => t.stop())
+  try {
+    backStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+    document.getElementById('cam-back').srcObject = backStream
+  } catch(e) {
+    showToast('Camera not available — using demo mode')
+    simulateDemoPhoto()
+  }
+}
+
+async function startFrontCamera() {
+  if (frontStream) frontStream.getTracks().forEach(t => t.stop())
+  // Show back photo as thumbnail
+  if (backPhotoData) {
+    const thumb = document.getElementById('back-thumb')
+    const tctx = thumb.getContext('2d')
+    const img = new Image(); img.src = backPhotoData
+    img.onload = () => { tctx.drawImage(img, 0, 0, 80, 107) }
+    document.getElementById('back-thumb-wrap').style.display = 'block'
+  }
+  // Hide back video, show front full screen
+  document.getElementById('cam-back').style.display = 'none'
+  try {
+    frontStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+    const frontVid = document.getElementById('cam-front-preview')
+    frontVid.srcObject = frontStream
+    frontVid.style.display = 'block'
+  } catch(e) {
+    showToast('Front camera not available')
+    captureFrontAndCompose()
+  }
+}
+
+function flipCamera() {
+  // Only for back camera step
+}
+
+async function handleShutter() {
+  if (cameraStep === 'back') {
+    // Capture back camera
+    captureBackPhoto()
+    cameraStep = 'front'
+    updateCamUI()
+    await startFrontCamera()
+  } else {
+    // Capture front and compose
+    captureFrontAndCompose()
+  }
+}
+
+function captureBackPhoto() {
+  const video = document.getElementById('cam-back')
+  const canvas = document.createElement('canvas')
+  canvas.width = video.videoWidth || 1080
+  canvas.height = video.videoHeight || 1920
+  canvas.getContext('2d').drawImage(video, 0, 0)
+  backPhotoData = canvas.toDataURL('image/jpeg', 0.92)
+}
+
+function captureFrontAndCompose() {
+  const video = document.getElementById('cam-front-preview')
+  const canvas = document.createElement('canvas')
+  const W = video.videoWidth || 400
+  const H = video.videoHeight || 500
+  canvas.width = W; canvas.height = H
+  const ctx = canvas.getContext('2d')
+  // Mirror for front camera — Snapchat style
+  ctx.translate(W, 0); ctx.scale(-1, 1)
+  ctx.drawImage(video, 0, 0, W, H)
+  ctx.setTransform(1,0,0,1,0,0)
+  frontPhotoData = canvas.toDataURL('image/jpeg', 0.92)
+  stopCameras()
+  buildResultCard(selVibe)
+  document.getElementById('s-cam').classList.remove('on')
+  document.getElementById('s-result').classList.add('on')
+}
+
+function simulateDemoPhoto() {
+  // Demo mode — use placeholder colours
+  backPhotoData = null; frontPhotoData = null
+  buildResultCard(selVibe)
+  document.getElementById('s-cam').classList.remove('on')
+  document.getElementById('s-result').classList.add('on')
+}
+
+function stopCameras() {
+  if (backStream) backStream.getTracks().forEach(t => t.stop()); backStream = null
+  if (frontStream) frontStream.getTracks().forEach(t => t.stop()); frontStream = null
+}
+
+function closeCamera() {
+  stopCameras()
+  document.getElementById('s-cam').classList.remove('on')
+  document.getElementById('cam-back').style.display = 'block'
+  document.getElementById('cam-front-preview').style.display = 'none'
+  document.getElementById('back-thumb-wrap').style.display = 'none'
+}
+
+function retake() {
+  document.getElementById('s-result').classList.remove('on')
+  backPhotoData = null; frontPhotoData = null
+  openCamera()
+}
+
+// ── BUILD RESULT CARD ──
+function buildResultCard(vibe) {
+  selVibe = vibe
+  const canvas = document.getElementById('result-canvas')
+  const W = 405, H = 720
+  canvas.width = W; canvas.height = H
+  const ctx = canvas.getContext('2d')
+
+  // Background
+  drawBackground(ctx, W, H, vibe)
+
+  // Back photo (main)
+  if (backPhotoData) {
+    const img = new Image(); img.src = backPhotoData
+    img.onload = () => {
+      ctx.save()
+      roundRectClip(ctx, 0, 0, W, H, 0)
+      ctx.drawImage(img, 0, 0, W, H)
+      ctx.restore()
+      drawOverlay(ctx, W, H, vibe)
+      if (frontPhotoData) drawFrontInset(ctx, W, H, vibe)
+      else drawPlaceholderInset(ctx, W, H, vibe)
+    }
+  } else {
+    drawOverlay(ctx, W, H, vibe)
+    drawPlaceholderInset(ctx, W, H, vibe)
+  }
+}
+
+function drawBackground(ctx, W, H, vibe) {
+  const bgs = {
+    clean: ['#fce7f3','#fdf2f8','#fff'],
+    dark: ['#0a0a0a','#1a1a1a','#0d0d0d'],
+    y2k: ['#3d1f00','#6b3a1f','#2d1500'],
+    athlete: ['#0a0f1a','#111827','#0d1117'],
+    city: ['#0f172a','#1e293b','#0a0f1e'],
+    bloom: ['#1a0a10','#2d1020','#0f0508'],
+  }
+  const c = bgs[vibe] || bgs.clean
+  const grad = ctx.createLinearGradient(0,0,W,H)
+  grad.addColorStop(0, c[0]); grad.addColorStop(0.5, c[1]); grad.addColorStop(1, c[2])
+  ctx.fillStyle = grad; ctx.fillRect(0,0,W,H)
+}
+
+function drawOverlay(ctx, W, H, vibe) {
+  // Vibe-specific overlay
+  if (vibe === 'city') drawCitySkyline(ctx, W, H)
+  if (vibe === 'bloom') drawBloomEffect(ctx, W, H)
+  if (vibe === 'y2k') drawY2KGrain(ctx, W, H)
+
+  // Bottom gradient
+  const grad = ctx.createLinearGradient(0, H*0.45, 0, H)
+  grad.addColorStop(0, 'rgba(0,0,0,0)')
+  grad.addColorStop(1, 'rgba(0,0,0,0.88)')
+  ctx.fillStyle = grad; ctx.fillRect(0, H*0.45, W, H*0.55)
+
+  // Top gradient for logo area
+  const topGrad = ctx.createLinearGradient(0, 0, 0, H*0.2)
+  topGrad.addColorStop(0, 'rgba(0,0,0,0.6)'); topGrad.addColorStop(1, 'rgba(0,0,0,0)')
+  ctx.fillStyle = topGrad; ctx.fillRect(0, 0, W, H*0.2)
+
+  // PILA logo top center
+  drawPilaLogo(ctx, W, vibe)
+
+  // Stats
+  drawStats(ctx, W, H, vibe)
+
+  // Studio + class pill
+  drawPills(ctx, W, H, vibe)
+
+  // @handle
+  drawHandle(ctx, W, H, vibe)
+}
+
+function drawPilaLogo(ctx, W, vibe) {
+  ctx.save()
+  ctx.textAlign = 'center'
+  // Glow effect
+  ctx.shadowColor = '#f472b6'
+  ctx.shadowBlur = 20
+  ctx.font = '700 32px Pacifico, cursive'
+
+  // Pink gradient text simulation
+  const gradient = ctx.createLinearGradient(W/2 - 40, 0, W/2 + 40, 0)
+  gradient.addColorStop(0, '#f9a8d4')
+  gradient.addColorStop(0.5, '#f472b6')
+  gradient.addColorStop(1, '#ec4899')
+  ctx.fillStyle = gradient
+  ctx.fillText('pila.', W/2, 54)
+  ctx.shadowBlur = 0
+  ctx.restore()
+}
+
+function drawStats(ctx, W, H, vibe) {
+  const statY = H * 0.65
+  const stats = [
+    { n: mockStats.classes, l: 'CLASSES' },
+    { n: mockStats.streak, l: 'STREAK' },
+    { n: mockStats.points, l: 'POINTS' }
+  ]
+  const statW = W / 3
+  const textColor = '#ffffff'
+  const labelColor = 'rgba(255,255,255,0.45)'
+
+  stats.forEach((s, i) => {
+    const x = statW * i + statW / 2
+    ctx.fillStyle = textColor
+    ctx.font = '700 32px -apple-system, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 10
+    ctx.fillText(String(s.n), x, statY)
+    ctx.fillStyle = labelColor
+    ctx.font = '600 10px -apple-system, sans-serif'
+    ctx.shadowBlur = 0
+    ctx.fillText(s.l, x, statY + 18)
+  })
+
+  // Dividers
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 0.5
+  ;[1, 2].forEach(i => {
+    const x = statW * i
+    ctx.beginPath(); ctx.moveTo(x, statY - 22); ctx.lineTo(x, statY + 20); ctx.stroke()
+  })
+}
+
+function drawPills(ctx, W, H, vibe) {
+  const pillY = H * 0.75
+  const studioText = selStudio ? selStudio.name : 'MOTIV Pilates'
+  const classText = selClass ? selClass.name.toUpperCase() : 'REFORMER'
+  const instText = selInstructor ? ' · ' + selInstructor : ''
+  const fullText = classText + ' · ' + studioText + instText
+
+  // Pill background
+  const pillW = Math.min(fullText.length * 7.5 + 32, W * 0.82)
+  const pillH = 36
+  const pillX = (W - pillW) / 2
+
+  // Pink pill
+  ctx.fillStyle = 'rgba(244,114,182,0.88)'
+  roundRect(ctx, pillX, pillY, pillW, pillH, 18)
+  ctx.fill()
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 0.5
+  roundRect(ctx, pillX, pillY, pillW, pillH, 18); ctx.stroke()
+
+  ctx.fillStyle = '#fff'
+  ctx.font = '600 12px -apple-system, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(fullText, W/2, pillY + pillH * 0.66)
+
+  // City
+  ctx.fillStyle = 'rgba(255,255,255,0.35)'
+  ctx.font = '500 11px -apple-system, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText('Toronto, ON', W/2, H * 0.845)
+}
+
+function drawHandle(ctx, W, H, vibe) {
+  const ig = selStudio ? selStudio.ig : '@pilaapp'
+  ctx.fillStyle = '#fff'
+  ctx.font = '800 18px -apple-system, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 14
+  ctx.fillText(ig, W/2, H * 0.896)
+  ctx.shadowBlur = 0
+
+  // Milestone badge if applicable
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'
+  ctx.font = '500 11px -apple-system, sans-serif'
+  ctx.fillText(mockStats.milestone, W/2, H * 0.938)
+}
+
+function drawFrontInset(ctx, W, H, vibe) {
+  const iw = 130, ih = 170, ix = 18, iy = H - 210
+  const img = new Image(); img.src = frontPhotoData
+  img.onload = () => {
+    ctx.save()
+    roundRectClip(ctx, ix, iy, iw, ih, 14)
+    ctx.drawImage(img, ix, iy, iw, ih)
+    ctx.restore()
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5
+    roundRect(ctx, ix, iy, iw, ih, 14); ctx.stroke()
+    // Shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 12
+    ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4
+    roundRect(ctx, ix, iy, iw, ih, 14); ctx.stroke()
+    ctx.shadowBlur = 0; ctx.shadowOffsetY = 0
+  }
+}
+
+function drawPlaceholderInset(ctx, W, H, vibe) {
+  const iw = 130, ih = 170, ix = 18, iy = H - 210
+  const grad = ctx.createLinearGradient(ix, iy, ix+iw, iy+ih)
+  grad.addColorStop(0, '#f472b6'); grad.addColorStop(1, '#c026d3')
+  ctx.fillStyle = grad
+  ctx.save(); roundRectClip(ctx, ix, iy, iw, ih, 14); ctx.fillRect(ix, iy, iw, ih); ctx.restore()
+  ctx.fillStyle = 'rgba(255,255,255,0.9)'
+  ctx.font = '700 28px -apple-system, sans-serif'
+  ctx.textAlign = 'center'; ctx.fillText('😊', ix + iw/2, iy + ih/2 + 10)
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5
+  roundRect(ctx, ix, iy, iw, ih, 14); ctx.stroke()
+}
+
+// ── VIBE SPECIFIC EFFECTS ──
+function drawCitySkyline(ctx, W, H) {
+  ctx.fillStyle = 'rgba(255,255,255,0.03)'
+  // Simple Toronto skyline silhouette
+  const buildings = [
+    [0, H*0.7, 60, H], [50, H*0.65, 40, H], [85, H*0.55, 30, H],
+    [110, H*0.6, 50, H], [155, H*0.45, 25, H], // CN Tower-ish
+    [175, H*0.75, 35, H], [205, H*0.68, 45, H],
+    [245, H*0.6, 35, H], [275, H*0.7, 50, H],
+    [320, H*0.62, 40, H], [355, H*0.72, 55, H],
+  ]
+  buildings.forEach(([x, y, w, h]) => {
+    ctx.fillRect(x, y, w, h - y)
+  })
+  // CN tower spike
+  ctx.fillStyle = 'rgba(255,255,255,0.05)'
+  ctx.beginPath(); ctx.moveTo(165, H*0.3); ctx.lineTo(162, H*0.45); ctx.lineTo(168, H*0.45); ctx.closePath(); ctx.fill()
+  // Stars
+  for(let i = 0; i < 40; i++) {
+    const sx = Math.random() * W, sy = Math.random() * H * 0.5
+    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.4 + 0.1})`
+    ctx.beginPath(); ctx.arc(sx, sy, Math.random() * 1.2, 0, Math.PI*2); ctx.fill()
+  }
+}
+
+function drawBloomEffect(ctx, W, H) {
+  const glow = ctx.createRadialGradient(W/2, H*0.4, 0, W/2, H*0.4, W*0.7)
+  glow.addColorStop(0, 'rgba(244,114,182,0.12)')
+  glow.addColorStop(0.5, 'rgba(192,38,211,0.06)')
+  glow.addColorStop(1, 'rgba(0,0,0,0)')
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,H)
+}
+
+function drawY2KGrain(ctx, W, H) {
+  // Warm vignette
+  const vig = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.8)
+  vig.addColorStop(0, 'rgba(255,150,0,0)'); vig.addColorStop(1, 'rgba(180,60,0,0.25)')
+  ctx.fillStyle = vig; ctx.fillRect(0,0,W,H)
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r)
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h)
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r)
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath()
+}
+function roundRectClip(ctx, x, y, w, h, r) { roundRect(ctx,x,y,w,h,r); ctx.clip() }
+
+// ── VIBE THUMBNAILS ──
+function renderVibes() {
+  document.getElementById('vibe-opts').innerHTML = VIBES.map((v,i) => `
+    <div class="vibe-opt ${i===0?'sel':''}" data-v="${v.id}" onclick="switchVibe('${v.id}',this)">
+      <div class="vibe-swatch ${i===0?'sel':''}" id="vs-${v.id}">
+        <canvas id="vt-${v.id}" width="56" height="56"></canvas>
+      </div>
+      <div class="vibe-name">${v.name}</div>
+    </div>
+  `).join('')
+  setTimeout(() => VIBES.forEach(v => buildVibeSwatch(v.id)), 100)
+}
+
+function buildVibeSwatch(vibe) {
+  const c = document.getElementById('vt-' + vibe)
+  if (!c) return
+  const ctx = c.getContext('2d')
+  drawBackground(ctx, 56, 56, vibe)
+  // Mini pink pill
+  ctx.fillStyle = 'rgba(244,114,182,0.8)'
+  roundRect(ctx, 8, 36, 40, 12, 6); ctx.fill()
+  // Mini stats dots
+  ;[14, 28, 42].forEach(x => {
+    ctx.fillStyle = 'rgba(255,255,255,0.7)'
+    ctx.beginPath(); ctx.arc(x, 26, 2.5, 0, Math.PI*2); ctx.fill()
+  })
+  if (vibe === 'city') {
+    ctx.fillStyle = 'rgba(255,255,255,0.15)'
+    ctx.fillRect(4, 40, 8, 16); ctx.fillRect(14, 36, 6, 20); ctx.fillRect(22, 42, 8, 14)
+    ctx.fillRect(36, 38, 7, 18); ctx.fillRect(46, 44, 7, 12)
+  }
+  if (vibe === 'bloom') {
+    const g = ctx.createRadialGradient(28,22,0,28,22,20)
+    g.addColorStop(0,'rgba(244,114,182,0.3)'); g.addColorStop(1,'rgba(0,0,0,0)')
+    ctx.fillStyle=g; ctx.fillRect(0,0,56,56)
+  }
+}
+
+function switchVibe(v, el) {
+  document.querySelectorAll('.vibe-opt').forEach(o => o.classList.remove('sel'))
+  document.querySelectorAll('.vibe-swatch').forEach(o => o.classList.remove('sel'))
+  el.classList.add('sel')
+  document.getElementById('vs-' + v).classList.add('sel')
+  buildResultCard(v)
+}
+
+// ── SHARE ──
+function openPhotoViewer(url, thenInsta) {
+  // Open full screen image — user long-presses to save on iOS
+  const overlay = document.createElement('div')
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center'
+  const img = document.createElement('img')
+  img.src = url
+  img.style.cssText = 'max-width:100%;max-height:80vh;border-radius:12px'
+  const tip = document.createElement('div')
+  tip.style.cssText = 'color:#fff;font-size:14px;font-weight:600;margin-top:16px;text-align:center;padding:0 24px;opacity:0.8;font-family:DM Sans,sans-serif'
+  tip.textContent = 'Hold down on the photo → Save to Photos'
+  const closeBtn = document.createElement('button')
+  closeBtn.textContent = thenInsta ? '✓ Saved — Open Instagram' : '✓ Done'
+  closeBtn.style.cssText = 'margin-top:16px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:700;font-family:DM Sans,sans-serif;cursor:pointer'
+  closeBtn.onclick = () => {
+    document.body.removeChild(overlay)
+    if (thenInsta) {
+      window.location.href = 'instagram://story-camera'
+      setTimeout(() => window.open('https://www.instagram.com', '_blank'), 1500)
+    }
+  }
+  overlay.appendChild(img)
+  overlay.appendChild(tip)
+  overlay.appendChild(closeBtn)
+  document.body.appendChild(overlay)
+}
+
+function shareToInsta() {
+  const canvas = document.getElementById('result-canvas')
+  const url = canvas.toDataURL('image/jpeg', 0.92)
+  openPhotoViewer(url, true)
+}
+
+function savePhoto() {
+  const canvas = document.getElementById('result-canvas')
+  const url = canvas.toDataURL('image/jpeg', 0.92)
+  openPhotoViewer(url, false)
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('on')
+  setTimeout(() => t.classList.remove('on'), 3500)
+}
+</script>
+</body>
+</html>
