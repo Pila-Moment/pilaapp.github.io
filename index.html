@@ -107,51 +107,149 @@ button{cursor:pointer;font-family:'DM Sans',sans-serif;border:none;outline:none}
 .cta-btn:disabled{opacity:0.4;box-shadow:none}
 
 /* ── CAMERA ── */
-.cam-screen{position:fixed;inset:0;background:#000;z-index:100;display:none;flex-direction:column}
+.cam-screen{
+  position:fixed;inset:0;background:#000;z-index:100;
+  display:none;flex-direction:column;
+  /* safe-area handled per element */
+}
 .cam-screen.on{display:flex}
-.cam-hdr{padding:max(54px,env(safe-area-inset-top)) 20px 14px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);position:absolute;top:0;left:0;right:0;z-index:10}
-.cam-logo{font-family:'Pacifico',cursive;font-size:22px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:2px 4px 2px 4px;display:inline-block;line-height:1.3}
-.cam-step-pill{background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border-radius:100px;padding:6px 14px;font-size:12px;color:#fff;font-weight:600;letter-spacing:0.05em}
-.cam-close{background:rgba(255,255,255,0.12);color:#fff;border-radius:50%;width:36px;height:36px;font-size:14px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
-.cam-main{flex:1;position:relative;overflow:hidden}
-#cam-back{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-#cam-front-preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none;z-index:5;border-radius:0}
-.cam-guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:4}
-.cam-guide-txt{background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border-radius:12px;padding:10px 18px;font-size:14px;color:#fff;font-weight:500;letter-spacing:0.02em}
-.cam-overlay-badge{position:absolute;bottom:160px;left:50%;transform:translateX(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:6px}
-.cam-studio-pill{background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,0.15);border-radius:100px;padding:7px 16px;font-size:12px;color:#fff;font-weight:600;letter-spacing:0.04em}
-.cam-class-pill{background:rgba(244,114,182,0.25);backdrop-filter:blur(12px);border:0.5px solid rgba(244,114,182,0.4);border-radius:100px;padding:5px 14px;font-size:11px;color:#f9a8d4;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
-.cam-btm{padding:16px 24px max(32px,env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);position:absolute;bottom:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between}
-.cam-hint{font-size:12px;color:rgba(255,255,255,0.45);text-align:center;flex:1;line-height:1.5}
-.shutter{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.15);border:3px solid #fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s;backdrop-filter:blur(8px)}
+
+/* Video layers */
+.cam-video-layer{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+}
+/* Front cam mirror */
+#cam-front{transform:scaleX(-1)}
+
+/* PIP container — front cam small preview in corner */
+.cam-pip{
+  position:absolute;
+  bottom:120px;right:16px;
+  width:100px;height:133px;
+  border-radius:14px;
+  overflow:hidden;
+  border:2.5px solid #fff;
+  box-shadow:0 4px 20px rgba(0,0,0,0.55);
+  z-index:20;
+  /* start hidden until stream ready */
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.cam-pip.ready{opacity:1}
+/* Mirror the PIP too so face looks natural */
+.cam-pip video{
+  width:100%;height:100%;
+  object-fit:cover;
+  transform:scaleX(-1);
+  display:block;
+}
+
+/* Loading state */
+.cam-loading{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:14px;z-index:30;background:#000;
+  transition:opacity .4s;
+}
+.cam-loading.hidden{opacity:0;pointer-events:none}
+.cam-loading-ring{
+  width:44px;height:44px;
+  border:3px solid rgba(255,255,255,0.15);
+  border-top-color:var(--pink);
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cam-loading-txt{color:rgba(255,255,255,0.5);font-size:14px;font-weight:500}
+
+/* Header overlay */
+.cam-hdr{
+  position:absolute;top:0;left:0;right:0;
+  padding:max(54px,env(safe-area-inset-top)) 20px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(to bottom,rgba(0,0,0,0.75),transparent);
+  z-index:25;pointer-events:none;
+}
+.cam-hdr button{pointer-events:auto}
+.cam-logo{font-family:'Pacifico',cursive;font-size:22px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:2px 4px;display:inline-block;line-height:1.3}
+.cam-close{background:rgba(255,255,255,0.12);color:#fff;border-radius:50%;width:36px;height:36px;font-size:14px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:none}
+
+/* Studio + class badge */
+.cam-badge-row{
+  position:absolute;bottom:115px;left:0;right:0;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  z-index:20;pointer-events:none;
+}
+.cam-studio-pill{background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,0.15);border-radius:100px;padding:7px 16px;font-size:12px;color:#fff;font-weight:600;letter-spacing:0.04em}
+.cam-class-pill{background:rgba(244,114,182,0.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(244,114,182,0.4);border-radius:100px;padding:5px 14px;font-size:11px;color:#f9a8d4;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+
+/* Bottom bar */
+.cam-btm{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:16px 32px max(32px,env(safe-area-inset-bottom));
+  background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);
+  z-index:25;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.shutter{
+  width:76px;height:76px;border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  border:3px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
 .shutter:active{transform:scale(0.9)}
 .shutter-in{width:58px;height:58px;border-radius:50%;background:#fff;transition:all .15s}
-.shutter.pink .shutter-in{background:linear-gradient(135deg,var(--pink),var(--pink3))}
-.cam-flip{background:rgba(255,255,255,0.12);color:#fff;border-radius:50%;width:46px;height:46px;font-size:20px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.cam-side-btn{
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:none;
+}
+
+/* Permission error state */
+.cam-error{
+  position:absolute;inset:0;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:12px;padding:40px;text-align:center;
+  background:#000;z-index:35;
+}
+.cam-error.show{display:flex}
+.cam-error-icon{font-size:44px}
+.cam-error-txt{color:rgba(255,255,255,0.7);font-size:15px;line-height:1.6}
+.cam-error-btn{background:var(--pink2);color:#fff;border-radius:12px;padding:13px 28px;font-size:14px;font-weight:700;border:none;margin-top:8px}
 
 /* ── RESULT ── */
 .result-screen{position:fixed;inset:0;background:#000;z-index:200;display:none;flex-direction:column}
 .result-screen.on{display:flex}
-.res-hdr{padding:max(54px,env(safe-area-inset-top)) 20px 14px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
-.res-logo{font-family:'Pacifico',cursive;font-size:22px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:2px 4px 2px 4px;display:inline-block;line-height:1.3}
+
+.res-hdr{
+  padding:max(54px,env(safe-area-inset-top)) 20px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  flex-shrink:0;
+}
+.res-logo{font-family:'Pacifico',cursive;font-size:22px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:2px 4px;display:inline-block;line-height:1.3}
 .retake-btn{background:rgba(255,255,255,0.1);color:#fff;border-radius:100px;padding:8px 16px;font-size:13px;font-weight:600;border:.5px solid rgba(255,255,255,0.2);letter-spacing:0.02em}
 .retake-btn:active{transform:scale(0.96);transition:transform .15s}
-.res-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;padding:8px}
-#result-canvas{max-width:100%;max-height:100%;border-radius:12px;object-fit:contain}
 
-/* VIBE PRESETS */
-.vibe-row{background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);padding:12px 16px}
-.vibe-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px;font-weight:600}
-.vibe-opts{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.vibe-opts::-webkit-scrollbar{display:none}
-.vibe-opt{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
-.vibe-swatch{width:56px;height:56px;border-radius:12px;border:2.5px solid transparent;transition:all .2s;overflow:hidden;position:relative}
-.vibe-swatch.sel{border-color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,0.3)}
-.vibe-swatch canvas{width:100%;height:100%;display:block}
-.vibe-name{font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
-.vibe-opt.sel .vibe-name{color:#fff}
+/* Canvas area */
+.res-canvas-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  background:#000;overflow:hidden;padding:8px;
+  min-height:0;
+}
+#result-canvas{max-width:100%;max-height:100%;border-radius:12px;display:block}
 
-.res-acts{padding:12px 20px max(24px,env(safe-area-inset-bottom));background:rgba(0,0,0,0.9);display:flex;flex-direction:column;gap:8px}
+/* Actions */
+.res-acts{padding:12px 20px max(24px,env(safe-area-inset-bottom));background:rgba(0,0,0,0.9);display:flex;flex-direction:column;gap:8px;flex-shrink:0}
 .res-insta{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border-radius:14px;padding:15px;font-size:15px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:0.01em}
 .res-insta:active{transform:scale(0.98);transition:transform .15s}
 .res-save{background:rgba(255,255,255,0.08);color:#fff;border-radius:14px;padding:13px;font-size:14px;text-align:center;border:.5px solid rgba(255,255,255,0.1);font-weight:500}
@@ -228,35 +326,63 @@ button{cursor:pointer;font-family:'DM Sans',sans-serif;border:none;outline:none}
   </div>
 </div>
 
-<!-- CAMERA -->
+<!-- ── CAMERA ── -->
 <div class="cam-screen" id="s-cam">
+
+  <!-- Loading overlay -->
+  <div class="cam-loading" id="cam-loading">
+    <div class="cam-loading-ring"></div>
+    <div class="cam-loading-txt">Starting cameras…</div>
+  </div>
+
+  <!-- Permission error overlay -->
+  <div class="cam-error" id="cam-error">
+    <div class="cam-error-icon">📷</div>
+    <div class="cam-error-txt">Camera access is needed to capture your moment.<br><br>Please allow camera access in your browser settings and try again.</div>
+    <button class="cam-error-btn" onclick="closeCamera()">Go back</button>
+  </div>
+
+  <!-- Back camera — full screen -->
+  <video id="cam-back" class="cam-video-layer" autoplay playsinline webkit-playsinline muted></video>
+
+  <!-- Front camera PIP -->
+  <div class="cam-pip" id="cam-pip">
+    <video id="cam-front" autoplay playsinline webkit-playsinline muted></video>
+  </div>
+
+  <!-- Top bar -->
   <div class="cam-hdr">
     <div class="cam-logo">pila.</div>
-    <div class="cam-step-pill" id="cam-step-pill">Back camera</div>
     <button class="cam-close" onclick="closeCamera()">✕</button>
   </div>
-  <div class="cam-main">
-    <video id="cam-back" autoplay playsinline muted></video>
-    <video id="cam-front-preview" autoplay playsinline muted></video>
-    <div id="back-thumb-wrap" style="display:none;position:absolute;bottom:20px;right:20px;width:80px;height:107px;border-radius:12px;overflow:hidden;border:2px solid #fff;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,0.5)">
-      <canvas id="back-thumb" width="80" height="107" style="width:100%;height:100%;display:block"></canvas>
-    </div>
-    <div class="cam-guide"><div class="cam-guide-txt" id="cam-guide-txt">Point at your studio or reformer</div></div>
-    <div class="cam-overlay-badge">
-      <div class="cam-studio-pill" id="cam-studio-pill">📍 Studio</div>
-      <div class="cam-class-pill" id="cam-class-pill">🧘 Reformer</div>
-    </div>
+
+  <!-- Studio + class label -->
+  <div class="cam-badge-row">
+    <div class="cam-studio-pill" id="cam-studio-pill">📍 Studio</div>
+    <div class="cam-class-pill" id="cam-class-pill">🧘 Class</div>
   </div>
+
+  <!-- Bottom shutter bar -->
   <div class="cam-btm">
-    <div class="cam-flip-spacer" style="width:46px"></div>
-    <button class="shutter" id="shutter-btn" onclick="handleShutter()">
+    <!-- Swap PIP button (left) -->
+    <button class="cam-side-btn" id="cam-swap-btn" onclick="swapPIP()" title="Swap cameras">
+      <!-- swap icon -->
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+      </svg>
+    </button>
+
+    <!-- Shutter -->
+    <button class="shutter" id="shutter-btn" onclick="capturePhoto()">
       <div class="shutter-in"></div>
     </button>
-    <button class="cam-flip" onclick="flipCamera()" id="flip-btn">🔄</button>
+
+    <!-- Spacer (right) -->
+    <div style="width:46px"></div>
   </div>
 </div>
 
-<!-- RESULT -->
+<!-- ── RESULT ── -->
 <div class="result-screen" id="s-result">
   <div class="res-hdr">
     <div class="res-logo">pila.</div>
@@ -264,10 +390,6 @@ button{cursor:pointer;font-family:'DM Sans',sans-serif;border:none;outline:none}
   </div>
   <div class="res-canvas-wrap">
     <canvas id="result-canvas"></canvas>
-  </div>
-  <div class="vibe-row">
-    <div class="vibe-label">Choose your vibe</div>
-    <div class="vibe-opts" id="vibe-opts"></div>
   </div>
   <div class="res-acts">
     <button class="res-insta" onclick="shareToInsta()">
@@ -323,25 +445,16 @@ const CLASSES = [
   { id:'private', em:'⭐', name:'Private Session', sub:'One-on-one' },
 ]
 
-const VIBES = [
-  { id:'clean', name:'Clean Girl', desc:'Minimal & soft' },
-  { id:'dark', name:'Dark Mode', desc:'Bold & moody' },
-  { id:'y2k', name:'Y2K', desc:'Warm & retro' },
-  { id:'athlete', name:'Athlete', desc:'Sharp & clean' },
-  { id:'city', name:'City', desc:'Toronto skyline' },
-  { id:'bloom', name:'Bloom', desc:'Dreamy & soft' },
-]
-
 // ── STATE ──
-let selStudio = null, selClass = null, selInstructor = null, selVibe = 'clean'
-let backStream = null, frontStream = null, backPhotoData = null, frontPhotoData = null
-let cameraStep = 'back' // 'back' or 'front'
-let mockStats = { classes: 25, streak: 8, points: 1250, milestone: '💪 25 classes' }
+let selStudio = null, selClass = null, selInstructor = null
+let backStream = null, frontStream = null
+let backPhotoData = null, frontPhotoData = null
+let pipSwapped = false  // when true: front=fullscreen, back=PIP
+let mockStats = { classes: 25, streak: 8, points: 1250 }
 
 // ── INIT ──
 renderStudios(STUDIOS)
 renderClasses()
-renderVibes()
 
 function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'))
@@ -365,11 +478,10 @@ function renderStudios(list) {
 }
 
 function filterStudios(q) {
-  const filtered = STUDIOS.filter(s =>
+  renderStudios(STUDIOS.filter(s =>
     s.name.toLowerCase().includes(q.toLowerCase()) ||
     s.neighborhood.toLowerCase().includes(q.toLowerCase())
-  )
-  renderStudios(filtered)
+  ))
 }
 
 function selectStudio(id) {
@@ -413,146 +525,157 @@ function selectInstructor(el, name) {
   el.classList.add('sel')
 }
 
-// ── CAMERA ──
+// ────────────────────────────────────────────────
+// CAMERA — both cameras start simultaneously
+// ────────────────────────────────────────────────
 async function openCamera() {
-  cameraStep = 'back'
-  backPhotoData = null; frontPhotoData = null
+  pipSwapped = false
+  backPhotoData = null
+  frontPhotoData = null
+
+  // Show camera screen + loading state
   document.getElementById('s-cam').classList.add('on')
-  document.getElementById('cam-studio-pill').textContent = '📍 ' + selStudio.name
-  document.getElementById('cam-class-pill').textContent = selClass.em + ' ' + selClass.name
-  document.getElementById('cam-front-preview').style.display = 'none'
-  document.getElementById('cam-back').style.display = 'block'
-  document.getElementById('back-thumb-wrap').style.display = 'none'
-  updateCamUI()
-  await startBackCamera()
-}
+  document.getElementById('cam-loading').classList.remove('hidden')
+  document.getElementById('cam-error').classList.remove('show')
+  document.getElementById('cam-pip').classList.remove('ready')
 
-function updateCamUI() {
-  const pill = document.getElementById('cam-step-pill')
-  const guide = document.getElementById('cam-guide-txt')
-  const shutter = document.getElementById('shutter-btn')
-  const flip = document.getElementById('flip-btn')
-  if (cameraStep === 'back') {
-    pill.textContent = '① Back camera'
-    guide.textContent = 'Point at your studio or reformer'
-    shutter.classList.remove('pink')
-    flip.style.display = 'flex'
-  } else {
-    pill.textContent = '② Front camera — smile!'
-    guide.textContent = 'Now take your selfie'
-    shutter.classList.add('pink')
-    flip.style.display = 'none'
-  }
-}
+  // Update labels
+  document.getElementById('cam-studio-pill').textContent = '📍 ' + (selStudio ? selStudio.name : 'Studio')
+  document.getElementById('cam-class-pill').textContent = (selClass ? selClass.em + ' ' + selClass.name : 'Class')
 
-async function startBackCamera() {
-  if (backStream) backStream.getTracks().forEach(t => t.stop())
+  // iOS Safari requires sequential getUserMedia calls — parallel fails
   try {
-    backStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
-    document.getElementById('cam-back').srcObject = backStream
-  } catch(e) {
-    showToast('Camera not available — using demo mode')
-    simulateDemoPhoto()
-  }
-}
-
-async function startFrontCamera() {
-  if (frontStream) frontStream.getTracks().forEach(t => t.stop())
-  if (backPhotoData) {
-    const thumb = document.getElementById('back-thumb')
-    const tctx = thumb.getContext('2d')
-    const img = new Image(); img.src = backPhotoData
-    img.onload = () => { tctx.drawImage(img, 0, 0, 80, 107) }
-    document.getElementById('back-thumb-wrap').style.display = 'block'
-  }
-  document.getElementById('cam-back').style.display = 'none'
-  const frontConstraints = [
-    { video: { facingMode: { exact: 'user' } }, audio: false },
-    { video: { facingMode: 'user' }, audio: false },
-    { video: { facingMode: { ideal: 'user' } }, audio: false },
-    { video: true, audio: false }
-  ]
-  let started = false
-  for (const c of frontConstraints) {
+    // ── Step 1: Back camera ──
+    // Try environment first, fall back to any camera
     try {
-      frontStream = await navigator.mediaDevices.getUserMedia(c)
-      const frontVid = document.getElementById('cam-front-preview')
-      frontVid.srcObject = frontStream
-      frontVid.style.display = 'block'
-      started = true; break
-    } catch(e) { continue }
-  }
-  if (!started) {
-    showToast('Front camera not available — using back photo only')
-    captureFrontAndCompose()
+      backStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false
+      })
+    } catch (e) {
+      // Last resort — any camera
+      backStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    }
+
+    const bvid = document.getElementById('cam-back')
+    bvid.srcObject = backStream
+    // iOS requires play() to be called after srcObject is set
+    bvid.setAttribute('playsinline', '')
+    bvid.setAttribute('muted', '')
+    await bvid.play().catch(() => {})
+
+    // ── Step 2: Front camera ──
+    // iOS: do NOT use { exact: 'user' } — it throws OverconstrainedError
+    // Try 'user' as ideal, then fall back silently
+    try {
+      frontStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' },
+        audio: false
+      })
+      const fvid = document.getElementById('cam-front')
+      fvid.srcObject = frontStream
+      fvid.setAttribute('playsinline', '')
+      fvid.setAttribute('muted', '')
+      await fvid.play().catch(() => {})
+      document.getElementById('cam-pip').classList.add('ready')
+    } catch (frontErr) {
+      // Front camera unavailable — hide PIP, continue with back only
+      console.warn('Front camera not available:', frontErr)
+      document.getElementById('cam-pip').style.display = 'none'
+    }
+
+    document.getElementById('cam-loading').classList.add('hidden')
+
+  } catch (err) {
+    console.error('Camera error:', err)
+    showCameraError()
   }
 }
 
-function flipCamera() {
-  // Only for back camera step
+function showCameraError() {
+  document.getElementById('cam-loading').classList.add('hidden')
+  document.getElementById('cam-error').classList.add('show')
 }
 
-async function handleShutter() {
-  if (cameraStep === 'back') {
-    // Capture back camera
-    captureBackPhoto()
-    cameraStep = 'front'
-    updateCamUI()
-    await startFrontCamera()
+// Swap which camera is full-screen vs PIP
+function swapPIP() {
+  pipSwapped = !pipSwapped
+  const backVid = document.getElementById('cam-back')
+  const pip = document.getElementById('cam-pip')
+  const frontVid = document.getElementById('cam-front')
+
+  if (pipSwapped) {
+    // Front = fullscreen, back = PIP
+    backVid.style.zIndex = '12'
+    backVid.style.position = 'absolute'
+    backVid.style.width = '100px'
+    backVid.style.height = '133px'
+    backVid.style.bottom = '120px'
+    backVid.style.right = '16px'
+    backVid.style.left = 'auto'
+    backVid.style.top = 'auto'
+    backVid.style.objectFit = 'cover'
+    backVid.style.borderRadius = '14px'
+    backVid.style.border = '2.5px solid #fff'
+    backVid.style.boxShadow = '0 4px 20px rgba(0,0,0,0.55)'
+
+    // Front becomes full layer (remove PIP styling)
+    pip.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border-radius:0;border:none;box-shadow:none;overflow:hidden;opacity:1;z-index:10'
+    frontVid.style.transform = 'scaleX(-1)' // keep mirrored
   } else {
-    // Capture front and compose
-    captureFrontAndCompose()
+    // Reset to default
+    backVid.style.cssText = ''
+    pip.style.cssText = ''
+    frontVid.style.transform = ''
+    document.getElementById('cam-pip').classList.add('ready')
   }
-}
-
-function captureBackPhoto() {
-  const video = document.getElementById('cam-back')
-  const canvas = document.createElement('canvas')
-  canvas.width = video.videoWidth || 1080
-  canvas.height = video.videoHeight || 1920
-  canvas.getContext('2d').drawImage(video, 0, 0)
-  backPhotoData = canvas.toDataURL('image/jpeg', 0.92)
-}
-
-function captureFrontAndCompose() {
-  const video = document.getElementById('cam-front-preview')
-  if (video.videoWidth > 0) {
-    const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth; canvas.height = video.videoHeight
-    const ctx = canvas.getContext('2d')
-    ctx.imageSmoothingEnabled = true
-    ctx.imageSmoothingQuality = 'high'
-    // Snapchat style mirror
-    ctx.translate(video.videoWidth, 0); ctx.scale(-1, 1)
-    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
-    ctx.setTransform(1,0,0,1,0,0)
-    frontPhotoData = canvas.toDataURL('image/jpeg', 0.92)
-  }
-  stopCameras()
-  buildResultCard(selVibe)
-  document.getElementById('s-cam').classList.remove('on')
-  document.getElementById('s-result').classList.add('on')
-}
-
-function simulateDemoPhoto() {
-  // Demo mode — use placeholder colours
-  backPhotoData = null; frontPhotoData = null
-  buildResultCard(selVibe)
-  document.getElementById('s-cam').classList.remove('on')
-  document.getElementById('s-result').classList.add('on')
 }
 
 function stopCameras() {
-  if (backStream) backStream.getTracks().forEach(t => t.stop()); backStream = null
-  if (frontStream) frontStream.getTracks().forEach(t => t.stop()); frontStream = null
+  if (backStream) { backStream.getTracks().forEach(t => t.stop()); backStream = null }
+  if (frontStream) { frontStream.getTracks().forEach(t => t.stop()); frontStream = null }
 }
 
 function closeCamera() {
   stopCameras()
+  // Reset swap state
+  pipSwapped = false
+  const backVid = document.getElementById('cam-back')
+  const pip = document.getElementById('cam-pip')
+  backVid.style.cssText = ''
+  pip.style.cssText = ''
+  document.getElementById('cam-pip').style.display = ''
   document.getElementById('s-cam').classList.remove('on')
-  document.getElementById('cam-back').style.display = 'block'
-  document.getElementById('cam-front-preview').style.display = 'none'
-  document.getElementById('back-thumb-wrap').style.display = 'none'
+}
+
+// ── CAPTURE — both cameras simultaneously ──
+function capturePhoto() {
+  // Capture back
+  const bvid = document.getElementById('cam-back')
+  if (bvid.videoWidth > 0) {
+    const bc = document.createElement('canvas')
+    bc.width = bvid.videoWidth; bc.height = bvid.videoHeight
+    bc.getContext('2d').drawImage(bvid, 0, 0)
+    backPhotoData = bc.toDataURL('image/jpeg', 0.92)
+  }
+
+  // Capture front (mirrored)
+  const fvid = document.getElementById('cam-front')
+  if (fvid.videoWidth > 0) {
+    const fc = document.createElement('canvas')
+    fc.width = fvid.videoWidth; fc.height = fvid.videoHeight
+    const ctx = fc.getContext('2d')
+    // Mirror horizontally so selfie looks natural
+    ctx.translate(fc.width, 0)
+    ctx.scale(-1, 1)
+    ctx.drawImage(fvid, 0, 0)
+    frontPhotoData = fc.toDataURL('image/jpeg', 0.92)
+  }
+
+  stopCameras()
+  buildResultCard()
+  document.getElementById('s-cam').classList.remove('on')
+  document.getElementById('s-result').classList.add('on')
 }
 
 function retake() {
@@ -561,326 +684,184 @@ function retake() {
   openCamera()
 }
 
-// ── BUILD RESULT CARD ──
-function buildResultCard(vibe) {
-  selVibe = vibe
+// ────────────────────────────────────────────────
+// RESULT CARD — clean, no filters
+// ────────────────────────────────────────────────
+function buildResultCard() {
   const canvas = document.getElementById('result-canvas')
   const W = 405, H = 720
   canvas.width = W; canvas.height = H
   const ctx = canvas.getContext('2d')
 
-  // Draw dark background for full canvas
+  // Dark base
   ctx.fillStyle = '#0a0a0a'
   ctx.fillRect(0, 0, W, H)
 
-  // Apply vibe effects to photo area only (top 60%)
-  const photoH = Math.floor(H * 0.6)
+  function drawEverything() {
+    // ── Back photo full-bleed ──
+    if (backPhotoData) {
+      const img = new Image()
+      img.onload = () => {
+        ctx.save()
+        // Fill entire canvas with back photo
+        const scale = Math.max(W / img.width, H / img.height)
+        const sw = img.width * scale, sh = img.height * scale
+        ctx.drawImage(img, (W - sw) / 2, (H - sh) / 2, sw, sh)
+        ctx.restore()
 
-  // Back photo fills top 60% only
-  if (backPhotoData) {
-    const img = new Image(); img.src = backPhotoData
-    img.onload = () => {
-      ctx.save()
-      ctx.beginPath(); ctx.rect(0, 0, W, photoH); ctx.clip()
-      // Draw photo covering top 60%
-      const scale = Math.max(W / img.width, photoH / img.height)
-      const sw = img.width * scale, sh = img.height * scale
-      const sx = (W - sw) / 2, sy = (photoH - sh) / 2
-      ctx.drawImage(img, sx, sy, sw, sh)
-      // Apply vibe filter to just the photo area
-      applyVibeToPhotoArea(ctx, W, photoH, vibe)
-      ctx.restore()
-      drawOverlay(ctx, W, H, curMs, vibe)
-      if (frontPhotoData) drawFrontInset(ctx, W, H, vibe)
-      else drawPlaceholderInset(ctx, W, H, vibe)
+        // Dark gradient — bottom 45%
+        const grad = ctx.createLinearGradient(0, H * 0.45, 0, H)
+        grad.addColorStop(0, 'rgba(0,0,0,0)')
+        grad.addColorStop(0.5, 'rgba(0,0,0,0.55)')
+        grad.addColorStop(1, 'rgba(0,0,0,0.88)')
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H)
+
+        // Top gradient for logo readability
+        const topGrad = ctx.createLinearGradient(0, 0, 0, H * 0.18)
+        topGrad.addColorStop(0, 'rgba(0,0,0,0.6)')
+        topGrad.addColorStop(1, 'rgba(0,0,0,0)')
+        ctx.fillStyle = topGrad; ctx.fillRect(0, 0, W, H * 0.18)
+
+        drawCardUI(ctx, W, H)
+
+        // Front photo inset
+        if (frontPhotoData) {
+          drawFrontInset(ctx, W, H)
+        }
+      }
+      img.src = backPhotoData
+    } else {
+      // No back photo — dark gradient placeholder
+      const grad = ctx.createLinearGradient(0, 0, W, H)
+      grad.addColorStop(0, '#1a0a12'); grad.addColorStop(1, '#0a0a0a')
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H)
+      drawCardUI(ctx, W, H)
     }
-  } else {
-    // No photo — show gradient placeholder in top area
-    const grad = ctx.createLinearGradient(0, 0, W, photoH)
-    grad.addColorStop(0, '#1a0a12'); grad.addColorStop(1, '#0a0a0a')
-    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, photoH)
-    drawOverlay(ctx, W, H, curMs, vibe)
-    drawPlaceholderInset(ctx, W, H, vibe)
   }
+
+  drawEverything()
 }
 
-function drawBackground(ctx, W, H, vibe) {
-  const bgs = {
-    clean: ['#fce7f3','#fdf2f8','#fff'],
-    dark: ['#0a0a0a','#1a1a1a','#0d0d0d'],
-    y2k: ['#3d1f00','#6b3a1f','#2d1500'],
-    athlete: ['#0a0f1a','#111827','#0d1117'],
-    city: ['#0f172a','#1e293b','#0a0f1e'],
-    bloom: ['#1a0a10','#2d1020','#0f0508'],
-  }
-  const c = bgs[vibe] || bgs.clean
-  const grad = ctx.createLinearGradient(0,0,W,H)
-  grad.addColorStop(0, c[0]); grad.addColorStop(0.5, c[1]); grad.addColorStop(1, c[2])
-  ctx.fillStyle = grad; ctx.fillRect(0,0,W,H)
-}
-
-function drawOverlay(ctx, W, H, vibe) {
-  // Vibe-specific overlay
-  if (vibe === 'city') drawCitySkyline(ctx, W, H)
-  if (vibe === 'bloom') drawBloomEffect(ctx, W, H)
-  if (vibe === 'y2k') drawY2KGrain(ctx, W, H)
-
-  // Bottom gradient
-  const grad = ctx.createLinearGradient(0, H*0.45, 0, H)
-  grad.addColorStop(0, 'rgba(0,0,0,0)')
-  grad.addColorStop(1, 'rgba(0,0,0,0.88)')
-  ctx.fillStyle = grad; ctx.fillRect(0, H*0.45, W, H*0.55)
-
-  // Top gradient for logo area
-  const topGrad = ctx.createLinearGradient(0, 0, 0, H*0.2)
-  topGrad.addColorStop(0, 'rgba(0,0,0,0.6)'); topGrad.addColorStop(1, 'rgba(0,0,0,0)')
-  ctx.fillStyle = topGrad; ctx.fillRect(0, 0, W, H*0.2)
-
-  // PILA logo top center
-  drawPilaLogo(ctx, W, vibe)
-
-  // Stats
-  drawStats(ctx, W, H, vibe)
-
-  // Studio + class pill
-  drawPills(ctx, W, H, vibe)
-
-  // @handle
-  drawHandle(ctx, W, H, vibe)
-}
-
-function drawPilaLogo(ctx, W, vibe) {
+function drawCardUI(ctx, W, H) {
+  // ── pila. logo ──
   ctx.save()
   ctx.textAlign = 'center'
-  // Glow effect
-  ctx.shadowColor = '#f472b6'
-  ctx.shadowBlur = 20
-  ctx.font = '700 32px Pacifico, cursive'
-
-  // Pink gradient text simulation
-  const gradient = ctx.createLinearGradient(W/2 - 40, 0, W/2 + 40, 0)
-  gradient.addColorStop(0, '#f9a8d4')
-  gradient.addColorStop(0.5, '#f472b6')
-  gradient.addColorStop(1, '#ec4899')
-  ctx.fillStyle = gradient
-  ctx.fillText('pila.', W/2, 54)
+  ctx.shadowColor = 'rgba(244,114,182,0.6)'
+  ctx.shadowBlur = 18
+  ctx.font = '700 30px Pacifico, cursive'
+  const logoGrad = ctx.createLinearGradient(W/2 - 45, 0, W/2 + 45, 0)
+  logoGrad.addColorStop(0, '#f9a8d4')
+  logoGrad.addColorStop(0.5, '#f472b6')
+  logoGrad.addColorStop(1, '#ec4899')
+  ctx.fillStyle = logoGrad
+  ctx.fillText('pila.', W / 2, 56)
   ctx.shadowBlur = 0
   ctx.restore()
-}
 
-function drawStats(ctx, W, H, vibe) {
-  const statY = H * 0.65
+  // ── Stats row ──
+  const statY = H * 0.66
   const stats = [
     { n: mockStats.classes, l: 'CLASSES' },
-    { n: mockStats.streak, l: 'STREAK' },
+    { n: mockStats.streak + ' 🔥', l: 'STREAK' },
     { n: mockStats.points, l: 'POINTS' }
   ]
-  const statW = W / 3
-  const textColor = '#ffffff'
-  const labelColor = 'rgba(255,255,255,0.45)'
-
+  const colW = W / 3
   stats.forEach((s, i) => {
-    const x = statW * i + statW / 2
-    ctx.fillStyle = textColor
-    ctx.font = '700 32px -apple-system, sans-serif'
+    const x = colW * i + colW / 2
     ctx.textAlign = 'center'
-    ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 10
+    ctx.fillStyle = '#fff'
+    ctx.font = '700 30px -apple-system,BlinkMacSystemFont,sans-serif'
+    ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 10
     ctx.fillText(String(s.n), x, statY)
-    ctx.fillStyle = labelColor
-    ctx.font = '600 10px -apple-system, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'
+    ctx.font = '600 10px -apple-system,BlinkMacSystemFont,sans-serif'
     ctx.shadowBlur = 0
     ctx.fillText(s.l, x, statY + 18)
   })
-
-  // Dividers
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 0.5
+  // dividers
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 0.5
   ;[1, 2].forEach(i => {
-    const x = statW * i
+    const x = colW * i
     ctx.beginPath(); ctx.moveTo(x, statY - 22); ctx.lineTo(x, statY + 20); ctx.stroke()
   })
-}
 
-function drawPills(ctx, W, H, vibe) {
-  const pillY = H * 0.75
-  const studioText = selStudio ? selStudio.name : 'MOTIV Pilates'
-  const classText = selClass ? selClass.name.toUpperCase() : 'REFORMER'
-  const instText = selInstructor ? ' · ' + selInstructor : ''
-  const fullText = classText + ' · ' + studioText + instText
-
-  // Pill background
-  const pillW = Math.min(fullText.length * 7.5 + 32, W * 0.82)
+  // ── Studio + class pill ──
+  const pillY = H * 0.755
+  const studioTxt = selStudio ? selStudio.name : 'PILA Studio'
+  const classTxt = selClass ? selClass.name.toUpperCase() : 'REFORMER'
+  const instTxt = selInstructor ? ' · ' + selInstructor : ''
+  const pillTxt = classTxt + ' · ' + studioTxt + instTxt
+  const pillW = Math.min(ctx.measureText(pillTxt).width + 40, W * 0.84)
   const pillH = 36
   const pillX = (W - pillW) / 2
 
-  // Pink pill
-  ctx.fillStyle = 'rgba(244,114,182,0.88)'
-  roundRect(ctx, pillX, pillY, pillW, pillH, 18)
-  ctx.fill()
+  ctx.fillStyle = 'rgba(244,114,182,0.85)'
+  roundRect(ctx, pillX, pillY, pillW, pillH, 18); ctx.fill()
   ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 0.5
   roundRect(ctx, pillX, pillY, pillW, pillH, 18); ctx.stroke()
-
   ctx.fillStyle = '#fff'
-  ctx.font = '600 12px -apple-system, sans-serif'
+  ctx.font = '600 12px -apple-system,BlinkMacSystemFont,sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText(fullText, W/2, pillY + pillH * 0.66)
+  ctx.fillText(pillTxt, W / 2, pillY + 23)
 
-  // City
+  // Toronto
   ctx.fillStyle = 'rgba(255,255,255,0.35)'
-  ctx.font = '500 11px -apple-system, sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText('Toronto, ON', W/2, H * 0.845)
-}
+  ctx.font = '500 11px -apple-system,BlinkMacSystemFont,sans-serif'
+  ctx.fillText('Toronto, ON', W / 2, H * 0.845)
 
-function drawHandle(ctx, W, H, vibe) {
-  const ig = selStudio ? selStudio.ig : '@pilaapp'
+  // Instagram handle
   ctx.fillStyle = '#fff'
-  ctx.font = '800 18px -apple-system, sans-serif'
-  ctx.textAlign = 'center'
-  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 14
-  ctx.fillText(ig, W/2, H * 0.896)
+  ctx.font = '800 18px -apple-system,BlinkMacSystemFont,sans-serif'
+  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 12
+  ctx.fillText(selStudio ? selStudio.ig : '@pilaapp', W / 2, H * 0.895)
   ctx.shadowBlur = 0
 
-  // Milestone badge if applicable
-  ctx.fillStyle = 'rgba(255,255,255,0.6)'
-  ctx.font = '500 11px -apple-system, sans-serif'
-  ctx.fillText(mockStats.milestone, W/2, H * 0.938)
+  // Milestone
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  ctx.font = '500 11px -apple-system,BlinkMacSystemFont,sans-serif'
+  ctx.fillText('💪 ' + mockStats.classes + ' classes strong', W / 2, H * 0.935)
 }
 
-function drawFrontInset(ctx, W, H, vibe) {
-  const iw = 130, ih = 170, ix = 18, iy = H - 210
-  const img = new Image(); img.src = frontPhotoData
+function drawFrontInset(ctx, W, H) {
+  const iw = 130, ih = 170
+  const ix = 18, iy = H - 210
+  const img = new Image()
   img.onload = () => {
     ctx.save()
-    roundRectClip(ctx, ix, iy, iw, ih, 14)
+    roundRect(ctx, ix, iy, iw, ih, 14); ctx.clip()
     ctx.drawImage(img, ix, iy, iw, ih)
     ctx.restore()
+    // White border
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5
     roundRect(ctx, ix, iy, iw, ih, 14); ctx.stroke()
-    // Shadow
-    ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 12
-    ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4
+    // Drop shadow under border
+    ctx.save()
+    ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 4
     roundRect(ctx, ix, iy, iw, ih, 14); ctx.stroke()
-    ctx.shadowBlur = 0; ctx.shadowOffsetY = 0
+    ctx.restore()
   }
-}
-
-function drawPlaceholderInset(ctx, W, H, vibe) {
-  const iw = 130, ih = 170, ix = 18, iy = H - 210
-  const grad = ctx.createLinearGradient(ix, iy, ix+iw, iy+ih)
-  grad.addColorStop(0, '#f472b6'); grad.addColorStop(1, '#c026d3')
-  ctx.fillStyle = grad
-  ctx.save(); roundRectClip(ctx, ix, iy, iw, ih, 10); ctx.fillRect(ix, iy, iw, ih); ctx.restore()
-  ctx.fillStyle = 'rgba(255,255,255,0.9)'
-  ctx.font = '700 24px -apple-system, sans-serif'
-  ctx.textAlign = 'center'; ctx.fillText('😊', ix + iw/2, iy + ih/2 + 8)
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2
-  roundRect(ctx, ix, iy, iw, ih, 10); ctx.stroke()
-}
-
-// ── VIBE SPECIFIC EFFECTS ──
-function drawCitySkyline(ctx, W, H) {
-  ctx.fillStyle = 'rgba(255,255,255,0.03)'
-  // Simple Toronto skyline silhouette
-  const buildings = [
-    [0, H*0.7, 60, H], [50, H*0.65, 40, H], [85, H*0.55, 30, H],
-    [110, H*0.6, 50, H], [155, H*0.45, 25, H], // CN Tower-ish
-    [175, H*0.75, 35, H], [205, H*0.68, 45, H],
-    [245, H*0.6, 35, H], [275, H*0.7, 50, H],
-    [320, H*0.62, 40, H], [355, H*0.72, 55, H],
-  ]
-  buildings.forEach(([x, y, w, h]) => {
-    ctx.fillRect(x, y, w, h - y)
-  })
-  // CN tower spike
-  ctx.fillStyle = 'rgba(255,255,255,0.05)'
-  ctx.beginPath(); ctx.moveTo(165, H*0.3); ctx.lineTo(162, H*0.45); ctx.lineTo(168, H*0.45); ctx.closePath(); ctx.fill()
-  // Stars
-  for(let i = 0; i < 40; i++) {
-    const sx = Math.random() * W, sy = Math.random() * H * 0.5
-    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.4 + 0.1})`
-    ctx.beginPath(); ctx.arc(sx, sy, Math.random() * 1.2, 0, Math.PI*2); ctx.fill()
-  }
-}
-
-function drawBloomEffect(ctx, W, H) {
-  const glow = ctx.createRadialGradient(W/2, H*0.4, 0, W/2, H*0.4, W*0.7)
-  glow.addColorStop(0, 'rgba(244,114,182,0.12)')
-  glow.addColorStop(0.5, 'rgba(192,38,211,0.06)')
-  glow.addColorStop(1, 'rgba(0,0,0,0)')
-  ctx.fillStyle = glow; ctx.fillRect(0,0,W,H)
-}
-
-function drawY2KGrain(ctx, W, H) {
-  // Warm vignette
-  const vig = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.8)
-  vig.addColorStop(0, 'rgba(255,150,0,0)'); vig.addColorStop(1, 'rgba(180,60,0,0.25)')
-  ctx.fillStyle = vig; ctx.fillRect(0,0,W,H)
+  img.src = frontPhotoData
 }
 
 function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r)
-  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h)
-  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r)
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath()
-}
-function roundRectClip(ctx, x, y, w, h, r) { roundRect(ctx,x,y,w,h,r); ctx.clip() }
-
-// ── VIBE THUMBNAILS ──
-function renderVibes() {
-  document.getElementById('vibe-opts').innerHTML = VIBES.map((v,i) => `
-    <div class="vibe-opt ${i===0?'sel':''}" data-v="${v.id}" onclick="switchVibe('${v.id}',this)">
-      <div class="vibe-swatch ${i===0?'sel':''}" id="vs-${v.id}">
-        <canvas id="vt-${v.id}" width="56" height="56"></canvas>
-      </div>
-      <div class="vibe-name">${v.name}</div>
-    </div>
-  `).join('')
-  setTimeout(() => VIBES.forEach(v => buildVibeSwatch(v.id)), 100)
-}
-
-function buildVibeSwatch(vibe) {
-  const c = document.getElementById('vt-' + vibe)
-  if (!c) return
-  const ctx = c.getContext('2d')
-  drawBackground(ctx, 56, 56, vibe)
-  // Mini pink pill
-  ctx.fillStyle = 'rgba(244,114,182,0.8)'
-  roundRect(ctx, 8, 36, 40, 12, 6); ctx.fill()
-  // Mini stats dots
-  ;[14, 28, 42].forEach(x => {
-    ctx.fillStyle = 'rgba(255,255,255,0.7)'
-    ctx.beginPath(); ctx.arc(x, 26, 2.5, 0, Math.PI*2); ctx.fill()
-  })
-  if (vibe === 'city') {
-    ctx.fillStyle = 'rgba(255,255,255,0.15)'
-    ctx.fillRect(4, 40, 8, 16); ctx.fillRect(14, 36, 6, 20); ctx.fillRect(22, 42, 8, 14)
-    ctx.fillRect(36, 38, 7, 18); ctx.fillRect(46, 44, 7, 12)
-  }
-  if (vibe === 'bloom') {
-    const g = ctx.createRadialGradient(28,22,0,28,22,20)
-    g.addColorStop(0,'rgba(244,114,182,0.3)'); g.addColorStop(1,'rgba(0,0,0,0)')
-    ctx.fillStyle=g; ctx.fillRect(0,0,56,56)
-  }
-}
-
-function switchVibe(v, el) {
-  document.querySelectorAll('.vibe-opt').forEach(o => o.classList.remove('sel'))
-  document.querySelectorAll('.vibe-swatch').forEach(o => o.classList.remove('sel'))
-  el.classList.add('sel')
-  document.getElementById('vs-' + v).classList.add('sel')
-  buildResultCard(v)
+  ctx.beginPath()
+  ctx.moveTo(x+r, y)
+  ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r)
+  ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h)
+  ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r)
+  ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y)
+  ctx.closePath()
 }
 
 // ── SHARE ──
 function openPhotoViewer(url, thenInsta) {
-  // Open full screen image — user long-presses to save on iOS
   const overlay = document.createElement('div')
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center'
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px'
   const img = document.createElement('img')
   img.src = url
-  img.style.cssText = 'max-width:100%;max-height:80vh;border-radius:12px'
+  img.style.cssText = 'max-width:100%;max-height:75vh;border-radius:12px;display:block'
   const tip = document.createElement('div')
-  tip.style.cssText = 'color:#fff;font-size:14px;font-weight:600;margin-top:16px;text-align:center;padding:0 24px;opacity:0.8;font-family:DM Sans,sans-serif'
+  tip.style.cssText = 'color:rgba(255,255,255,0.7);font-size:14px;font-weight:500;margin-top:16px;text-align:center;line-height:1.5;font-family:DM Sans,sans-serif'
   tip.textContent = 'Hold down on the photo → Save to Photos'
   const closeBtn = document.createElement('button')
   closeBtn.textContent = thenInsta ? '✓ Saved — Open Instagram' : '✓ Done'
@@ -892,22 +873,16 @@ function openPhotoViewer(url, thenInsta) {
       setTimeout(() => window.open('https://www.instagram.com', '_blank'), 1500)
     }
   }
-  overlay.appendChild(img)
-  overlay.appendChild(tip)
-  overlay.appendChild(closeBtn)
+  overlay.append(img, tip, closeBtn)
   document.body.appendChild(overlay)
 }
 
 function shareToInsta() {
-  const canvas = document.getElementById('result-canvas')
-  const url = canvas.toDataURL('image/jpeg', 0.92)
-  openPhotoViewer(url, true)
+  openPhotoViewer(document.getElementById('result-canvas').toDataURL('image/jpeg', 0.92), true)
 }
 
 function savePhoto() {
-  const canvas = document.getElementById('result-canvas')
-  const url = canvas.toDataURL('image/jpeg', 0.92)
-  openPhotoViewer(url, false)
+  openPhotoViewer(document.getElementById('result-canvas').toDataURL('image/jpeg', 0.92), false)
 }
 
 function showToast(msg) {
