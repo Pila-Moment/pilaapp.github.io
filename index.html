@@ -3,325 +3,1191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>pila.</title>
-<meta name="theme-color" content="#0d0d0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:#0a0a0a;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;color:#fafafa;-webkit-font-smoothing:antialiased;max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;background:#0a0a0a}
+button{cursor:pointer;font-family:'DM Sans',sans-serif;border:none;outline:none}
+img{display:block}
 
-:root {
-  --black: #0d0d0d;
-  --surface: #141414;
-  --off-white: #f5f0eb;
-  --blush: #e8c4b8;
-  --red: #ff3366;
-  --muted: rgba(245,240,235,0.35);
-  --very-muted: rgba(245,240,235,0.12);
-}
+/* SCREENS */
+.screen{display:none;min-height:100vh}
+.screen.on{display:block}
+.cam-screen{display:none;position:fixed;inset:0;background:#000;z-index:100;flex-direction:column}
+.cam-screen.on{display:flex}
+.result-screen{display:none;position:fixed;inset:0;background:#0a0a0a;z-index:200;flex-direction:column}
+.result-screen.on{display:flex}
 
-html, body {
-  background: var(--black);
-  color: var(--off-white);
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  max-width: 430px;
-  margin: 0 auto;
-  overflow-x: hidden;
-}
+/* LOGO */
+.pila-logo{font-family:'Pacifico',cursive;background:linear-gradient(135deg,#f9a8d4,#f472b6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:3px 6px 3px 6px;display:inline-block;line-height:1.3}
 
-button { cursor: pointer; font-family: 'Inter', sans-serif; border: none; outline: none; }
+/* ══════════════════════════════
+   WELCOME SCREEN
+══════════════════════════════ */
+.welcome{min-height:100vh;background:#0a0a0a;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.w-glow{position:absolute;top:-60px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(244,114,182,0.12) 0%,transparent 70%);pointer-events:none}
+.w-glow2{position:absolute;bottom:80px;left:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(168,85,247,0.07) 0%,transparent 70%);pointer-events:none}
+.w-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:max(56px,env(safe-area-inset-top)) 28px max(32px,env(safe-area-inset-bottom))}
+.w-top{margin-bottom:auto}
+.w-logo-wrap{margin-bottom:6px}
+.w-logo-wrap .pila-logo{font-size:48px}
+.w-tagline{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.28);font-weight:500;padding-left:4px}
+.w-hero{margin:auto 0 40px}
+.w-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(244,114,182,0.1);border:0.5px solid rgba(244,114,182,0.25);border-radius:100px;padding:6px 14px;margin-bottom:22px}
+.w-pill-dot{width:6px;height:6px;border-radius:50%;background:#f472b6;animation:pdot 2s ease-in-out infinite}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:0.3}}
+.w-pill-txt{font-size:11px;color:rgba(244,114,182,0.85);font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
+.w-h{font-size:52px;font-weight:700;color:#fff;line-height:1.0;margin-bottom:18px;letter-spacing:-1.5px}
+.w-h em{font-style:italic;font-family:'Playfair Display',serif;font-weight:400;color:#f472b6}
+.w-sub{font-size:15px;color:rgba(255,255,255,0.38);line-height:1.75;font-weight:300;max-width:280px}
+.w-cta{background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;width:100%;padding:18px;border-radius:14px;font-size:15px;font-weight:700;letter-spacing:0.02em;transition:transform .15s;box-shadow:0 8px 28px rgba(236,72,153,0.28);margin-bottom:10px}
+.w-cta:active{transform:scale(0.98)}
+.w-foot{text-align:center;font-size:11px;color:rgba(255,255,255,0.18);margin-bottom:16px}
+.w-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.w-nav-btn{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border-radius:100px;padding:8px 16px;font-size:11px;font-weight:600;border:0.5px solid rgba(255,255,255,0.08);letter-spacing:0.06em;text-transform:uppercase;transition:all .2s}
+.w-nav-btn:active{background:rgba(244,114,182,0.12);color:#f9a8d4;border-color:rgba(244,114,182,0.25)}
 
-/* ── SCREEN ── */
-.screen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: max(52px, env(safe-area-inset-top)) 0 max(40px, env(safe-area-inset-bottom));
-}
+/* ══════════════════════════════
+   STUDIO SELECT
+══════════════════════════════ */
+.ss-wrap{min-height:100vh;background:#0a0a0a;display:flex;flex-direction:column}
+.ss-hdr{background:#0a0a0a;padding:max(56px,env(safe-area-inset-top)) 24px 24px;position:relative;overflow:hidden}
+.ss-hdr-glow{position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(244,114,182,0.1) 0%,transparent 70%);pointer-events:none}
+.ss-hdr .pila-logo{font-size:26px;margin-bottom:10px}
+.ss-ti{font-size:28px;font-weight:700;color:#fff;margin-bottom:4px;letter-spacing:-0.5px}
+.ss-sub{font-size:13px;color:rgba(255,255,255,0.38);font-weight:300}
+.ss-body{flex:1;background:#f5f5f5;border-radius:24px 24px 0 0;padding:20px;margin-top:4px}
+.ss-search{display:flex;align-items:center;gap:10px;background:#fff;border:.5px solid rgba(0,0,0,0.08);border-radius:12px;padding:13px 16px;margin-bottom:18px;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.ss-search input{flex:1;border:none;outline:none;font-size:14px;color:#0a0a0a;font-family:'DM Sans',sans-serif;background:transparent}
+.ss-search input::placeholder{color:#a1a1aa}
+.ss-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#a1a1aa;margin-bottom:10px}
+.studio-card{background:#fff;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;box-shadow:0 1px 8px rgba(0,0,0,0.06);border:.5px solid rgba(0,0,0,0.04);cursor:pointer;transition:transform .15s}
+.studio-card:active{transform:scale(0.98)}
+.studio-av{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.av-sage{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+.av-pink{background:linear-gradient(135deg,#fce7f3,#fbcfe8)}
+.av-sky{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.av-lilac{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+.av-coral{background:linear-gradient(135deg,#ffe4e6,#fecdd3)}
+.av-sand{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.studio-info{flex:1;min-width:0}
+.studio-name{font-size:14px;font-weight:600;color:#0a0a0a;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.studio-addr{font-size:11px;color:#71717a;margin-bottom:4px}
+.studio-badge{display:inline-block;background:#fce7f3;color:#db2777;font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px;letter-spacing:0.06em;text-transform:uppercase}
+.studio-arr{font-size:18px;color:#d4d4d8;flex-shrink:0}
 
-/* ── TOP BAR ── */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  margin-bottom: 64px;
-}
+/* ══════════════════════════════
+   CLASS SELECT
+══════════════════════════════ */
+.cs-wrap{min-height:100vh;background:#0a0a0a;display:flex;flex-direction:column}
+.cs-hdr{background:#0a0a0a;padding:max(56px,env(safe-area-inset-top)) 24px 24px}
+.back-btn{background:rgba(255,255,255,0.08);color:#fff;border-radius:100px;padding:8px 16px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;letter-spacing:0.04em}
+.back-btn:active{background:rgba(255,255,255,0.12)}
+.cs-studio-chip{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.cs-dot{width:7px;height:7px;border-radius:50%;background:#f472b6;flex-shrink:0}
+.cs-studio-lbl{font-size:12px;color:rgba(255,255,255,0.45);font-weight:500;letter-spacing:0.02em}
+.cs-ti{font-size:28px;font-weight:700;color:#fff;letter-spacing:-0.5px}
+.cs-body{flex:1;background:#f5f5f5;border-radius:24px 24px 0 0;padding:20px;margin-top:4px}
+.cs-section-lbl{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#a1a1aa;margin-bottom:10px}
+.class-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
+.class-opt{background:#fff;border-radius:12px;padding:14px 12px;text-align:center;box-shadow:0 1px 8px rgba(0,0,0,0.06);border:2px solid transparent;cursor:pointer;transition:all .15s}
+.class-opt:active{transform:scale(0.96)}
+.class-opt.sel{border-color:#ec4899;background:#fdf2f8}
+.class-opt-em{font-size:26px;margin-bottom:5px}
+.class-opt-name{font-size:12px;font-weight:600;color:#0a0a0a}
+.class-opt-sub{font-size:10px;color:#a1a1aa;margin-top:1px}
+.inst-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:22px}
+.inst-row::-webkit-scrollbar{display:none}
+.inst-chip{flex-shrink:0;background:#fff;border:1.5px solid rgba(0,0,0,0.07);border-radius:100px;padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;color:#0a0a0a}
+.inst-chip.sel{background:#0a0a0a;color:#fff;border-color:#0a0a0a}
+.inst-chip:active{transform:scale(0.96)}
+.go-btn{width:100%;background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;padding:17px;border-radius:13px;font-size:15px;font-weight:700;box-shadow:0 6px 20px rgba(236,72,153,0.25);transition:all .15s;letter-spacing:0.02em}
+.go-btn:active{transform:scale(0.98)}
+.go-btn:disabled{opacity:0.35;box-shadow:none}
 
-.wordmark {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  color: var(--off-white);
-}
+/* ══════════════════════════════
+   CAMERA
+══════════════════════════════ */
+.cam-hdr{padding:max(52px,env(safe-area-inset-top)) 20px 12px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,0.75),transparent);position:absolute;top:0;left:0;right:0;z-index:10}
+.cam-hdr .pila-logo{font-size:20px}
+.cam-step-pill{background:rgba(255,255,255,0.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:100px;padding:6px 13px;font-size:11px;color:#fff;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.cam-close{background:rgba(255,255,255,0.1);color:#fff;border-radius:50%;width:34px;height:34px;font-size:13px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.cam-main{flex:1;position:relative;overflow:hidden;background:#000}
+#cam-back{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cam-front-preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none;z-index:5}
+#back-thumb-wrap{display:none;position:absolute;bottom:18px;right:18px;width:76px;height:102px;border-radius:11px;overflow:hidden;border:2.5px solid #fff;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,0.5)}
+#back-thumb{width:100%;height:100%;display:block;object-fit:cover}
+.cam-guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:4}
+.cam-guide-txt{background:rgba(0,0,0,0.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:10px;padding:9px 16px;font-size:13px;color:#fff;font-weight:500;letter-spacing:0.02em}
+.cam-badge-wrap{position:absolute;bottom:150px;left:50%;transform:translateX(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:0 20px}
+.cam-studio-pill{background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,0.12);border-radius:100px;padding:7px 16px;font-size:11px;color:#fff;font-weight:600;letter-spacing:0.04em;text-align:center}
+.cam-class-pill{background:rgba(244,114,182,0.22);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(244,114,182,0.35);border-radius:100px;padding:5px 13px;font-size:10px;color:#f9a8d4;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.cam-btm{padding:14px 24px max(28px,env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);position:absolute;bottom:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between}
+.shutter{width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,0.12);border:3px solid #fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .12s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.shutter:active{transform:scale(0.88)}
+.shutter-in{width:56px;height:56px;border-radius:50%;background:#fff;transition:all .12s}
+.shutter.front .shutter-in{background:linear-gradient(135deg,#f472b6,#db2777)}
+.cam-flip{background:rgba(255,255,255,0.1);color:#fff;border-radius:50%;width:44px;height:44px;font-size:19px;display:flex;align-items:center;justify-content:center}
+.cam-spacer{width:44px}
 
-.wordmark span {
-  color: var(--red);
-}
+/* ══════════════════════════════
+   RESULT SCREEN
+══════════════════════════════ */
+.res-hdr{padding:max(52px,env(safe-area-inset-top)) 20px 12px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);flex-shrink:0}
+.res-hdr .pila-logo{font-size:20px}
+.retake-btn{background:rgba(255,255,255,0.08);color:#fff;border-radius:100px;padding:8px 16px;font-size:12px;font-weight:600;border:.5px solid rgba(255,255,255,0.15);letter-spacing:0.04em}
+.retake-btn:active{transform:scale(0.96)}
+.res-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px 16px;background:#0a0a0a}
+#result-canvas{border-radius:12px;max-width:100%;max-height:100%;display:block}
+.vibe-row{background:#111;padding:10px 14px;flex-shrink:0}
+.vibe-lbl{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px;font-weight:600}
+.vibe-opts{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:1px}
+.vibe-opts::-webkit-scrollbar{display:none}
+.vibe-opt{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.vibe-swatch{width:52px;height:52px;border-radius:11px;border:2px solid transparent;transition:all .15s;overflow:hidden}
+.vibe-swatch.sel{border-color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,0.25)}
+.vibe-swatch canvas{width:100%;height:100%;display:block}
+.vibe-name{font-size:8px;color:rgba(255,255,255,0.4);font-weight:600;letter-spacing:0.07em;text-transform:uppercase}
+.vibe-opt.sel .vibe-name{color:#fff}
+.res-acts{padding:10px 18px max(22px,env(safe-area-inset-bottom));background:#0a0a0a;display:flex;flex-direction:column;gap:7px;flex-shrink:0}
+.res-insta{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border-radius:13px;padding:14px;font-size:14px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;gap:9px;letter-spacing:0.02em}
+.res-insta:active{transform:scale(0.98);transition:transform .12s}
+.res-save{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border-radius:13px;padding:12px;font-size:13px;text-align:center;border:.5px solid rgba(255,255,255,0.08);font-weight:500}
+.res-save:active{background:rgba(255,255,255,0.1)}
 
-.top-tag {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
+/* ══════════════════════════════
+   STREAK SCREEN
+══════════════════════════════ */
+.streak-wrap{min-height:100vh;background:#0a0a0a;display:flex;flex-direction:column}
+.streak-hdr{padding:max(56px,env(safe-area-inset-top)) 24px 32px;text-align:center;background:linear-gradient(160deg,#130810,#0a0a0a)}
+.streak-num{font-family:'Pacifico',cursive;font-size:96px;background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:inline-block;padding:3px 8px}
+.streak-lbl{font-size:13px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:4px;font-weight:500}
+.streak-body{flex:1;background:#f5f5f5;border-radius:24px 24px 0 0;padding:20px}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px}
+.week-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;font-size:9px;color:#a1a1aa;font-weight:600;letter-spacing:0.08em;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.week-day.done{background:#fce7f3;color:#ec4899}
+.week-day.today{border:2px solid #ec4899}
+.week-day-letter{font-size:9px;font-weight:700;margin-bottom:2px}
+.week-day-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.streak-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.streak-card{background:#fff;border-radius:14px;padding:16px;text-align:center;box-shadow:0 1px 8px rgba(0,0,0,0.06)}
+.streak-card-n{font-size:36px;font-weight:700;color:#0a0a0a;line-height:1;margin-bottom:4px}
+.streak-card-l{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a1a1aa;font-weight:600}
+.freeze-btn{width:100%;background:#fff;color:#0a0a0a;border-radius:13px;padding:14px;font-size:13px;font-weight:600;box-shadow:0 1px 8px rgba(0,0,0,0.06);margin-bottom:10px;letter-spacing:0.04em;text-transform:uppercase}
+.streak-share-btn{width:100%;background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;border-radius:13px;padding:14px;font-size:14px;font-weight:700}
 
-/* ── HERO ── */
-.hero {
-  padding: 0 24px;
-  flex: 1;
-}
+/* ══════════════════════════════
+   FRIENDS SCREEN
+══════════════════════════════ */
+.friends-wrap{min-height:100vh;background:#0a0a0a;display:flex;flex-direction:column}
+.friends-hdr{padding:max(56px,env(safe-area-inset-top)) 24px 20px}
+.friends-ti{font-size:30px;font-weight:700;color:#fff;letter-spacing:-0.5px;margin-bottom:4px}
+.friends-sub{font-size:13px;color:rgba(255,255,255,0.35);font-weight:300}
+.friends-body{flex:1;background:#f5f5f5;border-radius:24px 24px 0 0;padding:20px;margin-top:4px}
+.challenge-card{background:#fff;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 8px rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px}
+.challenge-icon{font-size:28px}
+.challenge-info{flex:1}
+.challenge-name{font-size:13px;font-weight:700;color:#0a0a0a;margin-bottom:2px}
+.challenge-prog{font-size:11px;color:#71717a}
+.challenge-bar{height:3px;background:#f3f4f6;border-radius:2px;margin-top:7px;overflow:hidden}
+.challenge-fill{height:100%;background:linear-gradient(90deg,#f472b6,#ec4899);border-radius:2px}
+.friend-row{background:#fff;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
+.friend-row.you{background:#fdf2f8;border:1.5px solid rgba(236,72,153,0.15)}
+.friend-rank{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.friend-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;color:#fff}
+.friend-info{flex:1;min-width:0}
+.friend-name{font-size:13px;font-weight:600;color:#0a0a0a;margin-bottom:1px}
+.friend-meta{font-size:11px;color:#71717a}
+.friend-right{text-align:right}
+.friend-n{font-size:24px;font-weight:700;color:#0a0a0a;line-height:1}
+.friend-nl{font-size:10px;color:#a1a1aa;letter-spacing:0.06em;text-transform:uppercase}
 
-.hero-eyebrow {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--blush);
-  margin-bottom: 20px;
-  opacity: 0.8;
-}
+/* ══════════════════════════════
+   WRAPPED SCREEN
+══════════════════════════════ */
+.wrapped-wrap{min-height:100vh;background:#0a0a0a;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.wrapped-glow-a{position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(244,114,182,0.1) 0%,transparent 70%);pointer-events:none}
+.wrapped-glow-b{position:absolute;bottom:-80px;left:-80px;width:240px;height:240px;background:radial-gradient(circle,rgba(168,85,247,0.08) 0%,transparent 70%);pointer-events:none}
+.wrapped-c{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:max(56px,env(safe-area-inset-top)) 28px max(32px,env(safe-area-inset-bottom))}
+.wrapped-year{font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:rgba(244,114,182,0.5);margin-bottom:6px;font-weight:600}
+.wrapped-title{font-size:46px;font-weight:700;color:#fff;line-height:1.0;margin-bottom:36px;letter-spacing:-1.5px}
+.wrapped-title em{font-style:italic;font-family:'Playfair Display',serif;font-weight:400;color:#f472b6}
+.wrapped-stats{display:flex;flex-direction:column;gap:24px;flex:1}
+.wrapped-stat-n{font-size:64px;font-weight:700;line-height:1;letter-spacing:-2px}
+.wrapped-stat-n.pink{background:linear-gradient(135deg,#f9a8d4,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding-left:3px;display:inline-block}
+.wrapped-stat-n.purple{background:linear-gradient(135deg,#e879f9,#c026d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding-left:3px;display:inline-block}
+.wrapped-stat-n.blue{background:linear-gradient(135deg,#67e8f9,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding-left:3px;display:inline-block}
+.wrapped-stat-l{font-size:13px;color:rgba(255,255,255,0.35);font-weight:300;margin-top:2px}
+.wrapped-id-card{background:rgba(244,114,182,0.08);border:0.5px solid rgba(244,114,182,0.18);border-radius:16px;padding:18px;margin-top:auto}
+.wrapped-id-label{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(244,114,182,0.55);margin-bottom:7px;font-weight:600}
+.wrapped-id-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:3px}
+.wrapped-id-sub{font-size:12px;color:rgba(255,255,255,0.35);font-weight:300}
+.wrapped-share-btn{width:100%;background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;border-radius:13px;padding:16px;font-size:14px;font-weight:700;margin-top:20px;letter-spacing:0.02em}
 
-.hero-headline {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 72px;
-  font-weight: 300;
-  line-height: 0.95;
-  color: var(--off-white);
-  margin-bottom: 0;
-  letter-spacing: -0.02em;
-}
+/* ══════════════════════════════
+   THEME PICKER
+══════════════════════════════ */
+.theme-wrap{min-height:100vh;background:#0a0a0a;display:flex;flex-direction:column}
+.theme-hdr{padding:max(56px,env(safe-area-inset-top)) 24px 20px}
+.theme-ti{font-size:28px;font-weight:700;color:#fff;letter-spacing:-0.5px;margin-bottom:4px}
+.theme-sub{font-size:13px;color:rgba(255,255,255,0.35);font-weight:300;margin-bottom:24px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 24px;flex:1}
+.theme-card{border-radius:18px;padding:18px;cursor:pointer;border:2px solid transparent;transition:all .15s;position:relative}
+.theme-card.sel{border-color:#f472b6}
+.theme-card.sel::after{content:'';position:absolute;top:12px;right:12px;width:20px;height:20px;background:#f472b6;border-radius:50%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");background-size:12px;background-repeat:no-repeat;background-position:center}
+.tc-clean{background:#fff}
+.tc-clean .theme-card-name{color:#0a0a0a}
+.tc-clean .theme-card-sub{color:#71717a}
+.tc-dark{background:#1a1a1a}
+.tc-dark .theme-card-name{color:#fff}
+.tc-dark .theme-card-sub{color:#71717a}
+.tc-bloom{background:#fff0f6}
+.tc-bloom .theme-card-name{color:#9d4e6e}
+.tc-bloom .theme-card-sub{color:#c084a0}
+.tc-athlete{background:#0f172a}
+.tc-athlete .theme-card-name{color:#f8fafc}
+.tc-athlete .theme-card-sub{color:#64748b}
+.theme-card-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.theme-card-sub{font-size:11px;opacity:0.7}
+.theme-preview{height:48px;border-radius:9px;margin-top:12px;display:grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+.tp-clean{background:#fce7f3;color:#ec4899}
+.tp-dark{background:#2a2a2a;color:#f472b6}
+.tp-bloom{background:#fce7f3;color:#ec4899}
+.tp-athlete{background:#1e293b;color:#38bdf8}
+.theme-save{background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;border-radius:13px;padding:16px;font-size:14px;font-weight:700;margin:20px 24px max(24px,env(safe-area-inset-bottom));letter-spacing:0.02em;width:calc(100% - 48px)}
 
-.hero-headline .line2 {
-  display: block;
-  font-style: italic;
-  font-size: 86px;
-  color: var(--red);
-  /* intentionally overflows — the signature element */
-  margin-left: -4px;
-  white-space: nowrap;
-}
+/* TOAST */
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(6px);background:#0a0a0a;color:#fff;font-size:13px;font-weight:500;padding:11px 20px;border-radius:100px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:9999;max-width:86vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);border:0.5px solid rgba(255,255,255,0.08)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-.hero-body {
-  margin-top: 36px;
-  max-width: 260px;
-}
-
-.hero-body p {
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1.75;
-  color: var(--muted);
-  letter-spacing: 0.01em;
-}
-
-/* ── STATS STRIP ── */
-.stats-strip {
-  display: flex;
-  gap: 0;
-  margin: 48px 24px 0;
-  border-top: 0.5px solid var(--very-muted);
-  padding-top: 20px;
-}
-
-.stat {
-  flex: 1;
-  padding-right: 20px;
-}
-
-.stat:not(:last-child) {
-  border-right: 0.5px solid var(--very-muted);
-  margin-right: 20px;
-}
-
-.stat-n {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  font-weight: 400;
-  color: var(--off-white);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.stat-l {
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-/* ── CTA AREA ── */
-.cta-area {
-  padding: 40px 24px 0;
-}
-
-.cta-main {
-  width: 100%;
-  background: var(--off-white);
-  color: var(--black);
-  padding: 17px 24px;
-  border-radius: 3px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background 0.2s;
-  margin-bottom: 12px;
-}
-
-.cta-main:active {
-  background: var(--blush);
-}
-
-.cta-arrow {
-  font-size: 18px;
-  font-weight: 300;
-}
-
-.cta-sub {
-  width: 100%;
-  background: none;
-  border: 0.5px solid var(--very-muted);
-  color: var(--muted);
-  padding: 17px 24px;
-  border-radius: 3px;
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: border-color 0.2s;
-}
-
-.cta-sub:active {
-  border-color: rgba(245,240,235,0.3);
-}
-
-/* ── BOTTOM STRIP ── */
-.bottom-strip {
-  padding: 32px 24px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.bottom-pills {
-  display: flex;
-  gap: 8px;
-}
-
-.bottom-pill {
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  border: 0.5px solid var(--very-muted);
-  border-radius: 2px;
-  padding: 5px 10px;
-  background: none;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.bottom-pill:active {
-  border-color: var(--blush);
-  color: var(--blush);
-}
-
-.bottom-note {
-  font-size: 10px;
-  color: rgba(245,240,235,0.18);
-  letter-spacing: 0.06em;
-}
-
-/* ── SUBTLE TEXTURE LINE ── */
-.texture-line {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(232,196,184,0.3), transparent);
-  pointer-events: none;
-}
+/* PHOTO VIEWER */
+.photo-viewer{position:fixed;inset:0;z-index:9998;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.photo-viewer img{max-width:100%;max-height:72vh;border-radius:12px}
+.photo-viewer-tip{color:#fff;font-size:14px;font-weight:500;margin-top:16px;text-align:center;opacity:0.7;padding:0 24px;line-height:1.6}
+.photo-viewer-btn{margin-top:16px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border:none;border-radius:13px;padding:14px 28px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;letter-spacing:0.02em}
 </style>
 </head>
 <body>
 
-<div class="texture-line"></div>
-
-<div class="screen">
-
-  <!-- TOP -->
-  <div class="top-bar">
-    <div class="wordmark">pila<span>.</span></div>
-    <div class="top-tag">Toronto</div>
-  </div>
-
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-eyebrow">Pilates · Moments · Community</div>
-    <h1 class="hero-headline">
-      Every class<br>
-      <span class="line2">is a moment.</span>
-    </h1>
-    <div class="hero-body">
-      <p>Check into your studio. Capture the dual shot. Share your stats. Your Pilates story, told the way it deserves.</p>
+<!-- ══ WELCOME ══ -->
+<div class="screen on" id="s-welcome">
+  <div class="welcome">
+    <div class="w-glow"></div>
+    <div class="w-glow2"></div>
+    <div class="w-content">
+      <div class="w-top">
+        <div class="w-logo-wrap"><div class="pila-logo">pila.</div></div>
+        <div class="w-tagline">Your Pilates Moment</div>
+      </div>
+      <div class="w-hero">
+        <div class="w-pill"><div class="w-pill-dot"></div><span class="w-pill-txt">BeReal meets Strava</span></div>
+        <div class="w-h">Every class<br>is a <em>moment.</em></div>
+        <div class="w-sub">Check into your studio. Capture the dual shot. Share your stats with your crew.</div>
+      </div>
+      <button class="w-cta" onclick="goTo('s-studio')">Start your moment →</button>
+      <div class="w-foot">Free to use · Request your studio</div>
+      <div class="w-nav">
+        <button class="w-nav-btn" onclick="goTo('s-streak')">Streak</button>
+        <button class="w-nav-btn" onclick="goTo('s-friends')">Friends</button>
+        <button class="w-nav-btn" onclick="goTo('s-wrapped')">Wrapped</button>
+        <button class="w-nav-btn" onclick="goTo('s-theme')">Vibe</button>
+      </div>
     </div>
   </div>
-
-  <!-- STATS -->
-  <div class="stats-strip">
-    <div class="stat">
-      <div class="stat-n">2.4k</div>
-      <div class="stat-l">Members</div>
-    </div>
-    <div class="stat">
-      <div class="stat-n">25</div>
-      <div class="stat-l">Studios</div>
-    </div>
-    <div class="stat">
-      <div class="stat-n">14k</div>
-      <div class="stat-l">Moments</div>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="cta-area">
-    <button class="cta-main">
-      Start your moment
-      <span class="cta-arrow">→</span>
-    </button>
-    <button class="cta-sub">
-      I already have an account
-      <span class="cta-arrow" style="font-size:14px">→</span>
-    </button>
-  </div>
-
-  <!-- BOTTOM -->
-  <div class="bottom-strip">
-    <div class="bottom-pills">
-      <button class="bottom-pill">🔥 Streak</button>
-      <button class="bottom-pill">👯 Friends</button>
-      <button class="bottom-pill">✨ Wrapped</button>
-    </div>
-    <div class="bottom-note">Free to join</div>
-  </div>
-
 </div>
 
+<!-- ══ STUDIO SELECT ══ -->
+<div class="screen" id="s-studio">
+  <div class="ss-wrap">
+    <div class="ss-hdr">
+      <div class="ss-hdr-glow"></div>
+      <div class="pila-logo">pila.</div>
+      <div class="ss-ti">Choose your studio</div>
+      <div class="ss-sub">Where are you reforming today?</div>
+    </div>
+    <div class="ss-body">
+      <div class="ss-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search studios in Toronto…" oninput="filterStudios(this.value)" id="studio-search">
+      </div>
+      <div class="ss-label">Toronto studios</div>
+      <div id="studio-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CLASS SELECT ══ -->
+<div class="screen" id="s-class">
+  <div class="cs-wrap">
+    <div class="cs-hdr">
+      <button class="back-btn" onclick="goTo('s-studio')">← Back</button>
+      <div class="cs-studio-chip">
+        <div class="cs-dot"></div>
+        <div class="cs-studio-lbl" id="cs-studio-lbl">Studio</div>
+      </div>
+      <div class="cs-ti">What did you do?</div>
+    </div>
+    <div class="cs-body">
+      <div class="cs-section-lbl">Class type</div>
+      <div class="class-grid" id="class-grid"></div>
+      <div class="cs-section-lbl">Instructor <span style="color:#d4d4d8;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
+      <div class="inst-row" id="inst-row"></div>
+      <button class="go-btn" id="go-btn" onclick="openCamera()" disabled>Capture your moment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CAMERA ══ -->
+<div class="cam-screen" id="s-cam">
+  <div class="cam-hdr">
+    <div class="pila-logo">pila.</div>
+    <div class="cam-step-pill" id="cam-step-pill">Back camera</div>
+    <button class="cam-close" onclick="closeCamera()">✕</button>
+  </div>
+  <div class="cam-main">
+    <video id="cam-back" autoplay playsinline muted></video>
+    <video id="cam-front-preview" autoplay playsinline muted></video>
+    <div id="back-thumb-wrap"><canvas id="back-thumb" width="76" height="102"></canvas></div>
+    <div class="cam-guide"><div class="cam-guide-txt" id="cam-guide-txt">Point at your studio or reformer</div></div>
+    <div class="cam-badge-wrap">
+      <div class="cam-studio-pill" id="cam-studio-pill">Studio</div>
+      <div class="cam-class-pill" id="cam-class-pill">Class</div>
+    </div>
+  </div>
+  <div class="cam-btm">
+    <div class="cam-spacer" id="cam-spacer"></div>
+    <button class="shutter" id="shutter-btn" onclick="handleShutter()">
+      <div class="shutter-in"></div>
+    </button>
+    <button class="cam-flip" id="flip-btn" onclick="flipCam()">↻</button>
+  </div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div class="result-screen" id="s-result">
+  <div class="res-hdr">
+    <div class="pila-logo">pila.</div>
+    <button class="retake-btn" onclick="retake()">↩ Retake</button>
+  </div>
+  <div class="res-canvas-wrap">
+    <canvas id="result-canvas"></canvas>
+  </div>
+  <div class="vibe-row">
+    <div class="vibe-lbl">Choose your vibe</div>
+    <div class="vibe-opts" id="vibe-opts"></div>
+  </div>
+  <div class="res-acts">
+    <button class="res-insta" onclick="shareToInsta()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Share to Instagram Story
+    </button>
+    <button class="res-save" onclick="savePhoto()">Save to camera roll</button>
+  </div>
+</div>
+
+<!-- ══ STREAK ══ -->
+<div class="screen" id="s-streak">
+  <div class="streak-wrap">
+    <div class="streak-hdr">
+      <button class="back-btn" onclick="goTo('s-welcome')" style="margin-bottom:20px">← Back</button>
+      <div class="streak-num" id="streak-num">8</div>
+      <div class="streak-lbl">Week Streak</div>
+    </div>
+    <div class="streak-body">
+      <div class="week-grid" id="week-grid"></div>
+      <div class="streak-cards">
+        <div class="streak-card">
+          <div class="streak-card-n" id="streak-best">12</div>
+          <div class="streak-card-l">Best streak</div>
+        </div>
+        <div class="streak-card">
+          <div class="streak-card-n" id="streak-total">25</div>
+          <div class="streak-card-l">Total classes</div>
+        </div>
+      </div>
+      <button class="freeze-btn" onclick="showToast('Streak freeze activated — you are safe for 24 hours')">Use Streak Freeze</button>
+      <button class="streak-share-btn" onclick="showToast('Streak shared to Instagram Story!')">Share your streak</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FRIENDS ══ -->
+<div class="screen" id="s-friends">
+  <div class="friends-wrap">
+    <div class="friends-hdr">
+      <button class="back-btn" onclick="goTo('s-welcome')" style="margin-bottom:16px">← Back</button>
+      <div class="friends-ti">Your Crew</div>
+      <div class="friends-sub">This month · classes logged</div>
+    </div>
+    <div class="friends-body">
+      <div class="challenge-card">
+        <div class="challenge-icon">★</div>
+        <div class="challenge-info">
+          <div class="challenge-name">January Reset Challenge</div>
+          <div class="challenge-prog">12 of 16 classes · ends Jan 31</div>
+          <div class="challenge-bar"><div class="challenge-fill" style="width:75%"></div></div>
+        </div>
+      </div>
+      <div id="friends-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WRAPPED ══ -->
+<div class="screen" id="s-wrapped">
+  <div class="wrapped-wrap">
+    <div class="wrapped-glow-a"></div>
+    <div class="wrapped-glow-b"></div>
+    <div class="wrapped-c">
+      <button class="back-btn" onclick="goTo('s-welcome')" style="margin-bottom:24px;align-self:flex-start">← Back</button>
+      <div class="wrapped-year">Your 2024</div>
+      <div class="wrapped-title">Year in<br><em>pila.</em></div>
+      <div class="wrapped-stats">
+        <div>
+          <div class="wrapped-stat-n pink" id="w-classes">127</div>
+          <div class="wrapped-stat-l">classes taken this year</div>
+        </div>
+        <div>
+          <div class="wrapped-stat-n purple" id="w-streak">14</div>
+          <div class="wrapped-stat-l">week best streak</div>
+        </div>
+        <div>
+          <div class="wrapped-stat-n blue" id="w-studio">MOTIV</div>
+          <div class="wrapped-stat-l">your home studio</div>
+        </div>
+      </div>
+      <div class="wrapped-id-card">
+        <div class="wrapped-id-label">You are</div>
+        <div class="wrapped-id-title" id="w-identity">The Reformer Girl</div>
+        <div class="wrapped-id-sub" id="w-identity-sub">Top 5% of PILA users this year</div>
+      </div>
+      <button class="wrapped-share-btn" onclick="showToast('Year in pila. saved — share to your story!')">Share my Year in pila.</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THEME ══ -->
+<div class="screen" id="s-theme">
+  <div class="theme-wrap">
+    <div class="theme-hdr">
+      <button class="back-btn" onclick="goTo('s-welcome')" style="margin-bottom:16px">← Back</button>
+      <div class="theme-ti">Your Vibe</div>
+      <div class="theme-sub">Pick your aesthetic. Changes the whole app.</div>
+    </div>
+    <div class="theme-grid">
+      <div class="theme-card tc-clean sel" id="tc-clean" onclick="pickTheme('clean',this)">
+        <div class="theme-card-name">Clean Girl</div>
+        <div class="theme-card-sub">Minimal & soft</div>
+        <div class="theme-preview tp-clean">CLEAN</div>
+      </div>
+      <div class="theme-card tc-dark" id="tc-dark" onclick="pickTheme('dark',this)">
+        <div class="theme-card-name">Dark Mode</div>
+        <div class="theme-card-sub">Bold & moody</div>
+        <div class="theme-preview tp-dark">DARK</div>
+      </div>
+      <div class="theme-card tc-bloom" id="tc-bloom" onclick="pickTheme('bloom',this)">
+        <div class="theme-card-name">Bloom</div>
+        <div class="theme-card-sub">Dreamy & pink</div>
+        <div class="theme-preview tp-bloom">BLOOM</div>
+      </div>
+      <div class="theme-card tc-athlete" id="tc-athlete" onclick="pickTheme('athlete',this)">
+        <div class="theme-card-name">Athlete</div>
+        <div class="theme-card-sub">Sharp & clean</div>
+        <div class="theme-preview tp-athlete">ATHLETE</div>
+      </div>
+    </div>
+    <button class="theme-save" onclick="saveTheme()">Save my vibe</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════
+// DATA
+// ══════════════════════════════
+const STUDIOS = [
+  {id:'motiv',name:'MOTIV Pilates',addr:'842 Danforth Ave',hood:'Danforth',em:'🌿',av:'av-sage',ig:'@motivpilates',instructors:['Lisa W.','Hayley C.','Chloe W.','Simona E.']},
+  {id:'muse',name:'Muse Movement',addr:'890 Dundas St W',hood:'Trinity Bellwoods',em:'🌸',av:'av-pink',ig:'@musemovement.ca',instructors:['Sarah M.','Jordan L.']},
+  {id:'assembly',name:'Assembly Movement',addr:'954 College St',hood:'Little Italy',em:'💪',av:'av-lilac',ig:'@assemblymovement',instructors:['Alex T.','Riley K.']},
+  {id:'jaybird',name:'Jaybird Pilates',addr:'751 Queen St W',hood:'Queen West',em:'🐦',av:'av-sky',ig:'@jaybird.pilates',instructors:['Morgan S.','Casey R.']},
+  {id:'niceday',name:'Nice Day Pilates',addr:'343 King St E',hood:'Corktown',em:'☀️',av:'av-sand',ig:'@nicedaypilates',instructors:['Taylor B.']},
+  {id:'sliving',name:'Sliving Studios',addr:'150 Eglinton Ave E',hood:'Midtown',em:'✦',av:'av-pink',ig:'@slivingstudios',instructors:['Quinn V.']},
+  {id:'fortides',name:'Fortides Pilates',addr:'1 Eglinton Ave E',hood:'Davisville',em:'★',av:'av-sage',ig:'@fortidespilates',instructors:['Drew M.']},
+  {id:'solis',name:'Solis Movement',addr:'1350 Danforth Ave',hood:'East Toronto',em:'●',av:'av-coral',ig:'@solismovement.ca',instructors:['Sam K.']},
+  {id:'bode',name:'Bode Movement',addr:'368 Dufferin St',hood:'Dufferin',em:'◆',av:'av-sky',ig:'@bodemovement',instructors:['Avery P.']},
+  {id:'strongpilates',name:'Strong Pilates',addr:'580 College St',hood:'Little Italy',em:'⬡',av:'av-lilac',ig:'@strongpilates.ca',instructors:['Blake T.']},
+  {id:'coco',name:'Coco Reformer Pilates',addr:'Toronto',hood:'Downtown',em:'○',av:'av-sand',ig:'@coco.reformer.pilates',instructors:['Instructor']},
+  {id:'sheboss',name:'SheBoss Studio',addr:'Toronto',hood:'Downtown',em:'◇',av:'av-lilac',ig:'@shebossstudio',instructors:['Instructor']},
+  {id:'culture',name:'Culture Studios',addr:'Toronto',hood:'Downtown',em:'▲',av:'av-sky',ig:'@culturestudios.ca',instructors:['Instructor']},
+  {id:'elemon',name:'Elemon Pilates',addr:'Toronto',hood:'Midtown',em:'△',av:'av-sand',ig:'@elemonpilates',instructors:['Instructor']},
+  {id:'bodyharmonics',name:'Body Harmonics',addr:'70 The Esplanade',hood:'St Lawrence',em:'◉',av:'av-lilac',ig:'@bodyharmonics',instructors:['Instructor']},
+  {id:'wickedbarre',name:'Wicked Barre',addr:'Thornhill',hood:'Thornhill',em:'□',av:'av-pink',ig:'@wickedbarre',instructors:['Instructor']},
+  {id:'sukha',name:'Sukha Yoga & Pilates',addr:'Toronto',hood:'East End',em:'◎',av:'av-sage',ig:'@sukhayoga.to',instructors:['Instructor']},
+  {id:'clubwellness',name:'ClubWell Studio',addr:'Toronto',hood:'Midtown',em:'◈',av:'av-sky',ig:'@clubwellstudio',instructors:['Instructor']},
+  {id:'reformerrep',name:'Reformer Republic',addr:'Toronto',hood:'King West',em:'▪',av:'av-lilac',ig:'@reformerrepublic',instructors:['Instructor']},
+  {id:'bluecanoe',name:'Blue Canoe Zen Gym',addr:'Toronto',hood:'East End',em:'▫',av:'av-sky',ig:'@bluecanoe.zen',instructors:['Instructor']},
+  {id:'iamyoga',name:'IAM Yoga Pilates',addr:'2323 Yonge St',hood:'Y&E',em:'◐',av:'av-sage',ig:'@iamyogapilates',instructors:['Instructor']},
+  {id:'galeria',name:'Galeria Pilates',addr:'Toronto',hood:'Midtown',em:'◑',av:'av-pink',ig:'@galeriapilates',instructors:['Instructor']},
+  {id:'clubjunction',name:'Club Pilates Junction',addr:'2720 Dundas St W',hood:'The Junction',em:'▷',av:'av-sage',ig:'@clubpilates',instructors:['Instructor']},
+  {id:'clubcollege',name:'Club Pilates College Park',addr:'777 Bay St',hood:'College Park',em:'▶',av:'av-sky',ig:'@clubpilates',instructors:['Instructor']},
+  {id:'clubleslieville',name:'Club Pilates Leslieville',addr:'1000 Queen St E',hood:'Leslieville',em:'▸',av:'av-pink',ig:'@clubpilates',instructors:['Instructor']},
+]
+
+const CLASSES = [
+  {id:'reformer',em:'🧘',name:'Reformer',sub:'Guided reformer'},
+  {id:'mat',em:'🤸',name:'Mat Pilates',sub:'Floor-based'},
+  {id:'barre',em:'🩰',name:'Barre',sub:'Ballet-inspired'},
+  {id:'lagree',em:'⚡',name:'Lagree',sub:'Megaformer'},
+  {id:'yoga',em:'🌿',name:'Yoga',sub:'Flow & restore'},
+  {id:'stretch',em:'✨',name:'Stretch',sub:'Recovery'},
+  {id:'cardio',em:'🏃',name:'Cardio Pilates',sub:'High energy'},
+  {id:'tower',em:'🗼',name:'Tower',sub:'Cadillac tower'},
+  {id:'chair',em:'🪑',name:'Wunda Chair',sub:'Chair-based'},
+  {id:'private',em:'⭐',name:'Private Session',sub:'One-on-one'},
+]
+
+const VIBES = [
+  {id:'none',name:'Clean'},
+  {id:'warm',name:'Warm'},
+  {id:'cool',name:'Cool'},
+  {id:'fade',name:'Fade'},
+  {id:'noir',name:'Noir'},
+  {id:'bloom',name:'Bloom'},
+]
+
+const mockStats = {classes:25, streak:8, points:1250}
+
+const FRIENDS = [
+  {name:'You',classes:25,streak:8,color:'#f472b6',you:true},
+  {name:'Sophia R.',classes:31,streak:12,color:'#c084fc'},
+  {name:'Mia K.',classes:28,streak:6,color:'#60a5fa'},
+  {name:'Ella V.',classes:22,streak:9,color:'#34d399'},
+  {name:'Zara M.',classes:19,streak:3,color:'#f59e0b'},
+  {name:'Isla P.',classes:14,streak:2,color:'#f472b6'},
+]
+
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+let selStudio=null, selClass=null, selInstructor=null, selVibe='none'
+let backStream=null, frontStream=null
+let backPhotoData=null, frontPhotoData=null
+let cameraStep='back'
+let currentTheme='clean'
+
+// ══════════════════════════════
+// NAVIGATION
+// ══════════════════════════════
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'))
+  const el = document.getElementById(id)
+  if (el) { el.classList.add('on'); window.scrollTo(0,0) }
+}
+
+// ══════════════════════════════
+// INIT RENDERS
+// ══════════════════════════════
+renderStudios(STUDIOS)
+renderClasses()
+renderVibes()
+renderStreak()
+renderFriends()
+renderWrapped()
+
+// Cold streak notification
+setTimeout(()=>showToast('Your '+mockStats.streak+' week streak — keep it going!'), 2500)
+
+// ══════════════════════════════
+// STUDIOS
+// ══════════════════════════════
+function renderStudios(list) {
+  const el = document.getElementById('studio-list')
+  if (!el) return
+  el.innerHTML = list.map(s=>`
+    <div class="studio-card" onclick="selectStudio('${s.id}')">
+      <div class="studio-av ${s.av}">${s.em}</div>
+      <div class="studio-info">
+        <div class="studio-name">${s.name}</div>
+        <div class="studio-addr">${s.addr} · ${s.hood}</div>
+        <div class="studio-badge">PILA studio</div>
+      </div>
+      <div class="studio-arr">›</div>
+    </div>`).join('')
+}
+
+function filterStudios(q) {
+  const filtered = STUDIOS.filter(s=>
+    s.name.toLowerCase().includes(q.toLowerCase()) ||
+    s.hood.toLowerCase().includes(q.toLowerCase())
+  )
+  renderStudios(filtered)
+}
+
+function selectStudio(id) {
+  selStudio = STUDIOS.find(s=>s.id===id)
+  document.getElementById('cs-studio-lbl').textContent = selStudio.name
+  renderInstructors(selStudio.instructors)
+  selClass=null; selInstructor=null
+  document.querySelectorAll('.class-opt').forEach(o=>o.classList.remove('sel'))
+  document.querySelectorAll('.inst-chip').forEach(o=>o.classList.remove('sel'))
+  document.getElementById('go-btn').disabled = true
+  goTo('s-class')
+}
+
+// ══════════════════════════════
+// CLASSES & INSTRUCTORS
+// ══════════════════════════════
+function renderClasses() {
+  const el = document.getElementById('class-grid')
+  if (!el) return
+  el.innerHTML = CLASSES.map(c=>`
+    <div class="class-opt" id="co-${c.id}" onclick="selectClass('${c.id}')">
+      <div class="class-opt-em">${c.em}</div>
+      <div class="class-opt-name">${c.name}</div>
+      <div class="class-opt-sub">${c.sub}</div>
+    </div>`).join('')
+}
+
+function selectClass(id) {
+  selClass = CLASSES.find(c=>c.id===id)
+  document.querySelectorAll('.class-opt').forEach(o=>o.classList.remove('sel'))
+  document.getElementById('co-'+id).classList.add('sel')
+  document.getElementById('go-btn').disabled = false
+}
+
+function renderInstructors(list) {
+  const el = document.getElementById('inst-row')
+  if (!el) return
+  el.innerHTML = list.map(i=>`
+    <div class="inst-chip" onclick="selectInst(this,'${i}')">${i}</div>`).join('')
+}
+
+function selectInst(el, name) {
+  selInstructor = name
+  document.querySelectorAll('.inst-chip').forEach(o=>o.classList.remove('sel'))
+  el.classList.add('sel')
+}
+
+// ══════════════════════════════
+// CAMERA
+// ══════════════════════════════
+async function openCamera() {
+  cameraStep = 'back'
+  backPhotoData = null
+  frontPhotoData = null
+  document.getElementById('s-cam').classList.add('on')
+  document.getElementById('cam-studio-pill').textContent = selStudio ? selStudio.name : 'Studio'
+  document.getElementById('cam-class-pill').textContent = selClass ? selClass.name.toUpperCase() : 'CLASS'
+  document.getElementById('cam-front-preview').style.display = 'none'
+  document.getElementById('cam-back').style.display = 'block'
+  document.getElementById('back-thumb-wrap').style.display = 'none'
+  document.getElementById('flip-btn').style.display = 'flex'
+  document.getElementById('shutter-btn').classList.remove('front')
+  document.getElementById('cam-step-pill').textContent = '① Back camera'
+  document.getElementById('cam-guide-txt').textContent = 'Point at your studio or reformer'
+  await startBackCamera()
+}
+
+async function startBackCamera() {
+  if (backStream) backStream.getTracks().forEach(t=>t.stop())
+  const constraints = [
+    {video:{facingMode:{exact:'environment'}},audio:false},
+    {video:{facingMode:'environment'},audio:false},
+    {video:{facingMode:{ideal:'environment'}},audio:false},
+    {video:{width:{ideal:1280},height:{ideal:720}},audio:false},
+    {video:true,audio:false}
+  ]
+  for (const c of constraints) {
+    try {
+      backStream = await navigator.mediaDevices.getUserMedia(c)
+      const vid = document.getElementById('cam-back')
+      vid.srcObject = backStream
+      await vid.play().catch(()=>{})
+      return
+    } catch(e) { continue }
+  }
+  showToast('Camera not available — demo mode')
+  setTimeout(simulateDemo, 500)
+}
+
+async function startFrontCamera() {
+  // Show back photo as thumbnail
+  if (backPhotoData) {
+    const thumb = document.getElementById('back-thumb')
+    const tctx = thumb.getContext('2d')
+    const img = new Image()
+    img.onload = ()=>{ tctx.drawImage(img,0,0,76,102) }
+    img.src = backPhotoData
+    document.getElementById('back-thumb-wrap').style.display = 'block'
+  }
+  // Hide back video
+  document.getElementById('cam-back').style.display = 'none'
+  // Update UI
+  document.getElementById('shutter-btn').classList.add('front')
+  document.getElementById('cam-step-pill').textContent = '② Selfie time!'
+  document.getElementById('cam-guide-txt').textContent = 'Now take your selfie'
+  document.getElementById('flip-btn').style.display = 'none'
+  document.getElementById('cam-spacer').style.display = 'block'
+
+  if (frontStream) frontStream.getTracks().forEach(t=>t.stop())
+  const constraints = [
+    {video:{facingMode:{exact:'user'}},audio:false},
+    {video:{facingMode:'user'},audio:false},
+    {video:{facingMode:{ideal:'user'}},audio:false},
+    {video:true,audio:false}
+  ]
+  for (const c of constraints) {
+    try {
+      frontStream = await navigator.mediaDevices.getUserMedia(c)
+      const vid = document.getElementById('cam-front-preview')
+      vid.srcObject = frontStream
+      vid.style.display = 'block'
+      await vid.play().catch(()=>{})
+      return
+    } catch(e) { continue }
+  }
+  // No front camera — compose with just back photo
+  captureFrontAndCompose()
+}
+
+function flipCam() {
+  // Placeholder — only shown on back camera step
+}
+
+async function handleShutter() {
+  if (cameraStep === 'back') {
+    captureBackPhoto()
+    cameraStep = 'front'
+    await startFrontCamera()
+  } else {
+    captureFrontAndCompose()
+  }
+}
+
+function captureBackPhoto() {
+  const video = document.getElementById('cam-back')
+  const W = video.videoWidth || 1280
+  const H = video.videoHeight || 720
+  const c = document.createElement('canvas')
+  c.width = W; c.height = H
+  const ctx = c.getContext('2d')
+  ctx.drawImage(video, 0, 0, W, H)
+  backPhotoData = c.toDataURL('image/jpeg', 0.92)
+}
+
+function captureFrontAndCompose() {
+  const video = document.getElementById('cam-front-preview')
+  if (video.videoWidth > 0) {
+    const c = document.createElement('canvas')
+    c.width = video.videoWidth; c.height = video.videoHeight
+    const ctx = c.getContext('2d')
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
+    // Mirror for selfie — Snapchat style
+    ctx.translate(video.videoWidth, 0); ctx.scale(-1, 1)
+    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+    frontPhotoData = c.toDataURL('image/jpeg', 0.92)
+  }
+  stopCameras()
+  document.getElementById('s-cam').classList.remove('on')
+  document.getElementById('s-result').classList.add('on')
+  setTimeout(()=>buildCard(selVibe), 80)
+}
+
+function simulateDemo() {
+  stopCameras()
+  document.getElementById('s-cam').classList.remove('on')
+  document.getElementById('s-result').classList.add('on')
+  setTimeout(()=>buildCard(selVibe), 80)
+}
+
+function stopCameras() {
+  if (backStream) { backStream.getTracks().forEach(t=>t.stop()); backStream=null }
+  if (frontStream) { frontStream.getTracks().forEach(t=>t.stop()); frontStream=null }
+}
+
+function closeCamera() {
+  stopCameras()
+  document.getElementById('s-cam').classList.remove('on')
+  document.getElementById('cam-back').style.display = 'block'
+  document.getElementById('cam-front-preview').style.display = 'none'
+  document.getElementById('back-thumb-wrap').style.display = 'none'
+}
+
+function retake() {
+  document.getElementById('s-result').classList.remove('on')
+  backPhotoData = null; frontPhotoData = null
+  openCamera()
+}
+
+// ══════════════════════════════
+// BUILD RESULT CARD
+// ══════════════════════════════
+function buildCard(vibe) {
+  selVibe = vibe
+  const canvas = document.getElementById('result-canvas')
+  const W = 810, H = 1440
+  canvas.width = W; canvas.height = H
+  canvas.style.maxWidth = '100%'
+  canvas.style.maxHeight = '100%'
+  const ctx = canvas.getContext('2d')
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+
+  const photoH = Math.floor(H * 0.58)
+  const studio = selStudio || {name:'PILA Studio',ig:'@pilaapp'}
+
+  // Black base
+  ctx.fillStyle = '#0a0a0a'
+  ctx.fillRect(0, 0, W, H)
+
+  function drawAll() {
+    // Clear
+    ctx.fillStyle = '#0a0a0a'
+    ctx.fillRect(0, 0, W, H)
+
+    if (backPhotoData) {
+      const img = new Image()
+      img.onload = function() {
+        // Draw back photo in top 58%
+        ctx.save()
+        ctx.beginPath(); ctx.rect(0, 0, W, photoH); ctx.clip()
+        const scale = Math.max(W / img.width, photoH / img.height)
+        const sw = img.width * scale, sh = img.height * scale
+        ctx.drawImage(img, (W-sw)/2, (photoH-sh)/2, sw, sh)
+        // Apply vibe filter
+        applyVibe(ctx, W, photoH, vibe)
+        ctx.restore()
+        drawPanel(ctx, W, H, photoH, studio, vibe)
+        drawSelfieInset(ctx, W, photoH)
+        drawPilaWatermark(ctx, W)
+      }
+      img.src = backPhotoData
+    } else {
+      // Gradient placeholder
+      const g = ctx.createLinearGradient(0, 0, W, photoH)
+      g.addColorStop(0, '#1a0a14')
+      g.addColorStop(1, '#0a0a0a')
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, photoH)
+      drawPanel(ctx, W, H, photoH, studio, vibe)
+      drawSelfieInset(ctx, W, photoH)
+      drawPilaWatermark(ctx, W)
+    }
+  }
+
+  drawAll()
+}
+
+function applyVibe(ctx, W, H, vibe) {
+  if (vibe === 'none') return
+  try {
+    const id = ctx.getImageData(0, 0, W, H)
+    const d = id.data
+    for (let i = 0; i < d.length; i += 4) {
+      const r=d[i], g=d[i+1], b=d[i+2]
+      if (vibe==='warm') { d[i]=Math.min(255,r+18); d[i+1]=Math.min(255,g+8); d[i+2]=Math.max(0,b-12) }
+      else if (vibe==='cool') { d[i]=Math.max(0,r-10); d[i+1]=Math.min(255,g+5); d[i+2]=Math.min(255,b+22) }
+      else if (vibe==='fade') { d[i]=r*0.55+68; d[i+1]=g*0.55+68; d[i+2]=b*0.55+68 }
+      else if (vibe==='noir') { const l=0.299*r+0.587*g+0.114*b; d[i]=l; d[i+1]=l; d[i+2]=l }
+      else if (vibe==='bloom') { d[i]=Math.min(255,r*1.08+10); d[i+1]=Math.min(255,g*1.05+5); d[i+2]=Math.min(255,b*1.02+5) }
+    }
+    ctx.putImageData(id, 0, 0)
+  } catch(e) {}
+}
+
+function drawPanel(ctx, W, H, photoH, studio, vibe) {
+  // Solid dark panel — always readable, no transparency issues
+  ctx.fillStyle = '#0a0a0a'
+  ctx.fillRect(0, photoH, W, H - photoH)
+
+  // Pink separator line
+  ctx.fillStyle = '#f472b6'
+  ctx.fillRect(0, photoH, W, 3)
+
+  const pad = photoH + 52
+
+  // Studio name — biggest element
+  ctx.textAlign = 'center'
+  ctx.shadowBlur = 0
+  ctx.shadowColor = 'transparent'
+  let studioName = studio.name
+  ctx.font = 'bold 46px -apple-system, Helvetica Neue, Arial, sans-serif'
+  while (ctx.measureText(studioName).width > W * 0.84 && studioName.length > 3) {
+    studioName = studioName.slice(0, -1)
+  }
+  ctx.fillStyle = '#ffffff'
+  ctx.fillText(studioName, W/2, pad)
+
+  // IG handle
+  ctx.fillStyle = '#f472b6'
+  ctx.font = '500 26px -apple-system, Helvetica Neue, Arial, sans-serif'
+  ctx.fillText(studio.ig, W/2, pad + 42)
+
+  // Divider
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)'
+  ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(W*0.1, pad+64); ctx.lineTo(W*0.9, pad+64); ctx.stroke()
+
+  // Stats
+  const stats = [{n:mockStats.classes,l:'CLASSES'},{n:mockStats.streak,l:'STREAK'},{n:mockStats.points,l:'POINTS'}]
+  const sw = W/3, sy = pad + 116
+  stats.forEach((s,i) => {
+    const x = sw*i + sw/2
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 54px -apple-system, Helvetica Neue, Arial, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(String(s.n), x, sy)
+    ctx.fillStyle = 'rgba(255,255,255,0.38)'
+    ctx.font = '600 18px -apple-system, Helvetica Neue, Arial, sans-serif'
+    ctx.fillText(s.l, x, sy+30)
+  })
+
+  // Stat dividers
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1
+  ;[1,2].forEach(i=>{
+    const x=sw*i; ctx.beginPath(); ctx.moveTo(x, sy-40); ctx.lineTo(x, sy+36); ctx.stroke()
+  })
+
+  // Divider
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(W*0.1, pad+170); ctx.lineTo(W*0.9, pad+170); ctx.stroke()
+
+  // Class pill
+  const classText = selClass ? selClass.name.toUpperCase() : 'REFORMER'
+  const instText = selInstructor ? ' · ' + selInstructor : ''
+  const pillText = classText + instText
+  ctx.font = '600 22px -apple-system, Helvetica Neue, Arial, sans-serif'
+  const pillW = Math.min(ctx.measureText(pillText).width + 60, W*0.84)
+  const pillH = 54, pillX = (W-pillW)/2, pillY = pad+186
+  ctx.fillStyle = 'rgba(244,114,182,0.14)'
+  rr(ctx, pillX, pillY, pillW, pillH, 27); ctx.fill()
+  ctx.strokeStyle = 'rgba(244,114,182,0.4)'; ctx.lineWidth = 1
+  rr(ctx, pillX, pillY, pillW, pillH, 27); ctx.stroke()
+  ctx.fillStyle = '#f9a8d4'
+  ctx.font = '600 22px -apple-system, Helvetica Neue, Arial, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(pillText, W/2, pillY + pillH*0.66)
+
+  // City
+  ctx.fillStyle = 'rgba(255,255,255,0.2)'
+  ctx.font = '300 20px -apple-system, Helvetica Neue, Arial, sans-serif'
+  ctx.fillText('Toronto, ON', W/2, pad+282)
+}
+
+function drawPilaWatermark(ctx, W) {
+  ctx.fillStyle = 'rgba(255,255,255,0.45)'
+  ctx.font = '600 22px -apple-system, Helvetica Neue, Arial, sans-serif'
+  ctx.textAlign = 'right'
+  ctx.shadowBlur = 0
+  ctx.fillText('pila.', W-26, 68)
+}
+
+function drawSelfieInset(ctx, W, photoH) {
+  if (!frontPhotoData) return
+  const iw = Math.floor(W * 0.26)
+  const ih = Math.floor(iw * 1.3)
+  const ix = 24, iy = photoH - ih - 24
+  const img = new Image()
+  img.onload = function() {
+    ctx.save()
+    rr(ctx, ix, iy, iw, ih, 16); ctx.clip()
+    ctx.drawImage(img, ix, iy, iw, ih)
+    ctx.restore()
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 4
+    rr(ctx, ix, iy, iw, ih, 16); ctx.stroke()
+  }
+  img.src = frontPhotoData
+}
+
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x+r, y)
+  ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r)
+  ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h)
+  ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r)
+  ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y)
+  ctx.closePath()
+}
+
+// ══════════════════════════════
+// VIBES
+// ══════════════════════════════
+function renderVibes() {
+  const el = document.getElementById('vibe-opts')
+  if (!el) return
+  el.innerHTML = VIBES.map((v,i)=>`
+    <div class="vibe-opt ${i===0?'sel':''}" data-v="${v.id}" onclick="switchVibe('${v.id}',this)">
+      <div class="vibe-swatch ${i===0?'sel':''}" id="vs-${v.id}">
+        <canvas id="vt-${v.id}" width="52" height="52"></canvas>
+      </div>
+      <div class="vibe-name">${v.name}</div>
+    </div>`).join('')
+  setTimeout(()=>VIBES.forEach(v=>drawVibeSwatch(v.id)), 120)
+}
+
+function drawVibeSwatch(vibe) {
+  const c = document.getElementById('vt-'+vibe)
+  if (!c) return
+  const ctx = c.getContext('2d')
+  const bgs = {none:'#1a1a2e',warm:'#2d1a00',cool:'#001a2d',fade:'#2a2a2a',noir:'#0d0d0d',bloom:'#1a0a14'}
+  ctx.fillStyle = bgs[vibe] || '#1a1a1a'; ctx.fillRect(0,0,52,52)
+  ctx.fillStyle = 'rgba(244,114,182,0.7)'
+  rr(ctx, 8, 32, 36, 12, 6); ctx.fill()
+  ;[14,26,38].forEach(x=>{
+    ctx.fillStyle = 'rgba(255,255,255,0.65)'
+    ctx.beginPath(); ctx.arc(x, 22, 3, 0, Math.PI*2); ctx.fill()
+  })
+}
+
+function switchVibe(v, el) {
+  selVibe = v
+  document.querySelectorAll('.vibe-opt').forEach(o=>o.classList.remove('sel'))
+  document.querySelectorAll('.vibe-swatch').forEach(o=>o.classList.remove('sel'))
+  el.classList.add('sel')
+  const sw = document.getElementById('vs-'+v)
+  if (sw) sw.classList.add('sel')
+  buildCard(v)
+}
+
+// ══════════════════════════════
+// SHARE & SAVE
+// ══════════════════════════════
+function openViewer(url, thenInsta) {
+  const ov = document.createElement('div')
+  ov.className = 'photo-viewer'
+  const img = document.createElement('img')
+  img.src = url
+  const tip = document.createElement('div')
+  tip.className = 'photo-viewer-tip'
+  tip.textContent = 'Hold down on the photo then tap Save to Photos'
+  const btn = document.createElement('button')
+  btn.className = 'photo-viewer-btn'
+  btn.textContent = thenInsta ? 'Saved — Open Instagram' : 'Done'
+  btn.onclick = ()=>{
+    document.body.removeChild(ov)
+    if (thenInsta) {
+      window.location.href = 'instagram://story-camera'
+      setTimeout(()=>window.open('https://www.instagram.com','_blank'), 1200)
+    }
+  }
+  ov.appendChild(img); ov.appendChild(tip); ov.appendChild(btn)
+  document.body.appendChild(ov)
+}
+
+function shareToInsta() {
+  const canvas = document.getElementById('result-canvas')
+  openViewer(canvas.toDataURL('image/jpeg',0.92), true)
+}
+
+function savePhoto() {
+  const canvas = document.getElementById('result-canvas')
+  openViewer(canvas.toDataURL('image/jpeg',0.92), false)
+}
+
+// ══════════════════════════════
+// STREAK
+// ══════════════════════════════
+function renderStreak() {
+  const n = document.getElementById('streak-num')
+  if (n) n.textContent = mockStats.streak
+  const b = document.getElementById('streak-best')
+  if (b) b.textContent = Math.max(mockStats.streak, 12)
+  const t = document.getElementById('streak-total')
+  if (t) t.textContent = mockStats.classes
+  const grid = document.getElementById('week-grid')
+  if (!grid) return
+  const days = ['S','M','T','W','T','F','S']
+  const today = new Date().getDay()
+  grid.innerHTML = days.map((d,i)=>{
+    const done = i <= today && mockStats.streak > 0
+    const isToday = i === today
+    return `<div class="week-day ${done?'done':''} ${isToday?'today':''}">
+      <div class="week-day-letter">${d}</div>
+      <div class="week-day-dot"></div>
+    </div>`
+  }).join('')
+}
+
+// ══════════════════════════════
+// FRIENDS
+// ══════════════════════════════
+function renderFriends() {
+  const el = document.getElementById('friends-list')
+  if (!el) return
+  const sorted = [...FRIENDS].sort((a,b)=>b.classes-a.classes)
+  const medals = ['1st','2nd','3rd']
+  el.innerHTML = sorted.map((f,i)=>{
+    const initials = f.name.split(' ').map(w=>w[0]).join('').slice(0,2)
+    return `<div class="friend-row ${f.you?'you':''}">
+      <div class="friend-rank">${i<3?medals[i]:i+1}</div>
+      <div class="friend-av" style="background:${f.color}22;color:${f.color}">${initials}</div>
+      <div class="friend-info">
+        <div class="friend-name">${f.name}${f.you?' (you)':''}</div>
+        <div class="friend-meta">${f.streak}wk streak</div>
+      </div>
+      <div class="friend-right">
+        <div class="friend-n">${f.classes}</div>
+        <div class="friend-nl">classes</div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+// ══════════════════════════════
+// WRAPPED
+// ══════════════════════════════
+function getIdentity(c) {
+  if (c>=100) return {title:'The Icon',sub:'Top 1% of PILA users'}
+  if (c>=50)  return {title:'The Legend',sub:'Top 5% of PILA users'}
+  if (c>=25)  return {title:'The Reformer Girl',sub:'Top 15% of PILA users'}
+  if (c>=10)  return {title:'The Regular',sub:'Building something real'}
+  return {title:'Just Getting Started',sub:'Every legend starts here'}
+}
+
+function renderWrapped() {
+  const wc = document.getElementById('w-classes')
+  const ws = document.getElementById('w-streak')
+  const wst = document.getElementById('w-studio')
+  const wi = document.getElementById('w-identity')
+  const wis = document.getElementById('w-identity-sub')
+  if (wc) wc.textContent = mockStats.classes * 5 + 2
+  if (ws) ws.textContent = Math.max(mockStats.streak, 14)
+  if (wst) wst.textContent = selStudio ? selStudio.name.split(' ')[0].toUpperCase() : 'MOTIV'
+  const id = getIdentity(mockStats.classes)
+  if (wi) wi.textContent = id.title
+  if (wis) wis.textContent = id.sub
+}
+
+// ══════════════════════════════
+// THEME
+// ══════════════════════════════
+function pickTheme(t, el) {
+  currentTheme = t
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'))
+  el.classList.add('sel')
+}
+
+function saveTheme() {
+  showToast('Vibe saved — ' + currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1))
+  goTo('s-welcome')
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.classList.add('on')
+  setTimeout(()=>t.classList.remove('on'), 3200)
+}
+</script>
 </body>
 </html>
